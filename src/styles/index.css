@@ -9,6 +9,7 @@
   --text-primary: #E0E0E0;
   --text-secondary: #A0A0A0;
   --accent-color: #FF8C00; /* Sunset Amber */
+  --accent: #FF8C00;       /* Syncing with Tailwind's --color-accent */
   --border-color: rgba(255, 255, 255, 0.1);
   --glass-bg: rgba(255, 255, 255, 0.03);
   --scanline-opacity: 0.2;
@@ -21,6 +22,7 @@
   --text-primary: #1C1D20;
   --text-secondary: #555555;
   --accent-color: #D4AF37; /* Deep Gold */
+  --accent: #D4AF37;       /* Fix: This was previously light gray (#e9ebef) */
   --border-color: rgba(0, 0, 0, 0.1);
   --glass-bg: rgba(0, 0, 0, 0.03);
   --scanline-opacity: 0.05;
@@ -32,6 +34,16 @@ body {
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
   transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* Fix for vanishing hover text */
+a, button {
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+
+a:hover, button:hover {
+  mix-blend-mode: normal !important; /* Prevents difference math from hiding text */
+  isolation: isolate;
 }
 
 .font-mono {
@@ -53,7 +65,7 @@ body {
   background: var(--accent-color);
 }
 
-/* Lenis Scroll */
+/* Lenis Scroll Logic */
 html.lenis, html.lenis body {
   height: auto;
 }
@@ -65,9 +77,6 @@ html.lenis, html.lenis body {
 }
 .lenis.lenis-stopped {
   overflow: hidden;
-}
-.lenis.lenis-scrolling iframe {
-  pointer-events: none;
 }
 
 /* Overlays */
@@ -103,27 +112,16 @@ html.lenis, html.lenis body {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
-/* Utility Classes using CSS Variables */
+/* Utility Classes */
 .bg-primary { background-color: var(--bg-primary); }
 .bg-secondary { background-color: var(--bg-secondary); }
 .text-primary { color: var(--text-primary); }
 .text-secondary { color: var(--text-secondary); }
 .text-accent { color: var(--accent-color); }
 .border-theme { border-color: var(--border-color); }
-.bg-glass { background-color: var(--glass-bg); }
 
 .glass-panel {
   background: var(--glass-bg);
   backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
-}
-
-.micro-border {
-  border: 0.5px solid var(--border-color);
-}
-
-.glow-hover:hover {
-  box-shadow: 0 0 15px var(--accent-color);
-  border-color: var(--accent-color);
 }

@@ -1,34 +1,40 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, Variants } from 'motion/react';
+import { motion, Variants, AnimatePresence } from 'motion/react';
 import gsap from 'gsap';
-import { ImageWithFallback } from './figma/ImageWithFallback';
 
-// Project Images
+// 1. IMPORT IMAGES DIRECTLY
+// This ensures Vite processes them and gives them a valid URL
+import ucmasImg from '../../assets/ucmassl_Tusgu.png';
+import employmentImg from '../../assets/EmploymentRun.jpeg';
+import medscopeImg from '../../assets/medscope.jpg';
+
 const projects = [
   {
-    title: "TUSGU",
+    title: "UCMAS Sri Lanka & TUSGU",
     subtitle: "Web Speech API & Supabase",
-    src: "https://images.unsplash.com/photo-1581279413370-08c4b00e5651?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjeWJlcnB1bmslMjBzZXJ2ZXIlMjByb29tJTIwYWJzdHJhY3R8ZW58MXx8fHwxNzcwMzI1MzcxfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+    src: ucmasImg,
     color: "#0066FF",
-    desc: "Practice Web App with mental math engines."
+    desc: "Practice Web App with mental math engines.",
+    link: "https://apps.apple.com/us/app/ucmas-sl-tusgu/id6757826021"
   },
   {
     title: "Employment Run",
     subtitle: "FPGA & Verilog Hardware",
-    src: "https://images.unsplash.com/photo-1597862624292-45748390b00e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxGUEdBJTIwY2lyY3VpdCUyMGJvYXJkJTIwY2xvc2UlMjB1cHxlbnwxfHx8fDE3NzA0MDUzMjZ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+    src: employmentImg,
     color: "#FF3366",
-    desc: "Hardware-based game with collision detection logic."
+    desc: "Hardware-based game with collision detection logic.",
+    link: "https://www.linkedin.com/posts/seeron-sivashankar_fpga-verilog-hardwareengineering-activity-7401361285122260992-pvg1?utm_source=share&utm_medium=member_desktop&rcm=ACoAADAU_qABIJMfIvMBqAj6xFJwhgomj5Ynj_c"
   },
   {
     title: "Medscope",
     subtitle: "OpenCV & Gemini API",
-    src: "https://images.unsplash.com/photo-1766299892683-d50398e31823?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZWRpY2FsJTIwdGVjaG5vbG9neSUyMGVtZXJnZW5jeSUyMGRldmljZXxlbnwxfHx8fDE3NzA0MDQzOTR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+    src: medscopeImg,
     color: "#00CC99",
-    desc: "Emergency response generator using Computer Vision."
+    desc: "Emergency response generator using Computer Vision.",
+    link: "https://newhacks-2024.devpost.com/project-gallery?page=1"
   }
 ];
 
-// Fixed Variants with explicit type to allow cubic-bezier arrays
 const scaleAnimation: Variants = {
   initial: { scale: 0, x: "-50%", y: "-50%" },
   enter: { 
@@ -53,6 +59,7 @@ export default function Work() {
   useEffect(() => {
     if (!cursor.current || !cursorLabel.current) return;
     
+    // QuickTo for smooth performance
     const moveContainerX = gsap.quickTo(cursor.current, "left", {duration: 0.8, ease: "power3"});
     const moveContainerY = gsap.quickTo(cursor.current, "top", {duration: 0.8, ease: "power3"});
     const moveLabelX = gsap.quickTo(cursorLabel.current, "left", {duration: 0.45, ease: "power3"});
@@ -77,66 +84,70 @@ export default function Work() {
              <h2 className="text-4xl md:text-6xl font-light tracking-tighter">
                 Engineering <span className="text-accent">Archive</span>
              </h2>
-             <span className="font-mono text-xs opacity-50 hidden md:block">SCROLL_TO_INSPECT</span>
+             <span className="font-mono text-xs opacity-50 hidden md:block">CLICK_TO_INITIALIZE</span>
           </div>
 
           <div className="projects flex flex-col w-full">
-            {projects.map((project, index) => {
-              return (
-                <div 
-                  key={index}
-                  onMouseEnter={() => setModal({active: true, index})} 
-                  onMouseLeave={() => setModal({active: false, index})} 
-                  className="group w-full flex flex-col md:flex-row justify-between md:items-center py-12 border-t border-theme last:border-b hover:bg-secondary transition-colors cursor-none"
-                >
-                  <div className="flex flex-col gap-2 transition-transform duration-300 group-hover:translate-x-4">
-                      <h2 className="text-3xl md:text-5xl font-medium m-0">{project.title}</h2>
-                      <p className="font-mono text-sm text-accent">{project.subtitle}</p>
-                  </div>
-                  
-                  <div className="mt-4 md:mt-0 max-w-md text-secondary font-light text-sm md:text-right transition-transform duration-300 group-hover:-translate-x-4">
-                      {project.desc}
-                  </div>
+            {projects.map((project, index) => (
+              <a 
+                key={index}
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                onMouseEnter={() => setModal({active: true, index})} 
+                onMouseLeave={() => setModal({active: false, index})} 
+                className="group w-full flex flex-col md:flex-row justify-between md:items-center py-12 border-t border-theme last:border-b hover:bg-secondary transition-colors cursor-none no-underline"
+              >
+                <div className="flex flex-col gap-2 transition-transform duration-300 group-hover:translate-x-4">
+                    <h2 className="text-3xl md:text-5xl font-medium m-0 text-primary">{project.title}</h2>
+                    <p className="font-mono text-sm text-accent">{project.subtitle}</p>
                 </div>
-              )
-            })}
+                
+                <div className="mt-4 md:mt-0 max-w-md text-secondary font-light text-sm md:text-right transition-transform duration-300 group-hover:-translate-x-4">
+                    {project.desc}
+                </div>
+              </a>
+            ))}
           </div>
       </div>
 
-      {/* Portal Mask Effect - Circular Reveal */}
+      {/* PORTAL MASK EFFECT - Image Preview */}
       <motion.div 
         ref={cursor}
-        /* Fixed Tailwind Conflict: Replaced 'hidden md:flex' with logic-based display */
-        className={`fixed top-0 left-0 w-[350px] h-[350px] rounded-full overflow-hidden pointer-events-none z-30 items-center justify-center -translate-x-1/2 -translate-y-1/2 mix-blend-normal border-2 border-accent ${modal.active ? 'md:flex' : 'hidden'}`}
+        className="fixed top-0 left-0 w-[350px] h-[350px] rounded-full overflow-hidden pointer-events-none z-30 flex items-center justify-center mix-blend-normal border-2 border-accent bg-secondary shadow-2xl"
         variants={scaleAnimation}
         initial="initial"
         animate={modal.active ? "enter" : "closed"}
       >
-        <div style={{top: `${modal.index * -100}%`}} className="relative h-full w-full transition-[top] duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]">
-          {projects.map((project, index) => {
-            return (
+        <div 
+          style={{ transform: `translateY(${modal.index * -100}%)` }} 
+          className="relative h-full w-full transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
+        >
+          {projects.map((project, index) => (
             <div className="h-full w-full flex items-center justify-center bg-secondary" key={`modal_${index}`}>
               <div className="relative w-full h-full">
-                  <div className="absolute inset-0 bg-accent/20 mix-blend-overlay z-10"></div>
-                  <ImageWithFallback 
+                  {/* Overlay for aesthetic consistency */}
+                  <div className="absolute inset-0 bg-accent/10 mix-blend-overlay z-10"></div>
+                  
+                  {/* DIRECT IMG TAG FOR RELIABILITY */}
+                  <img 
                     src={project.src}
-                    width={350}
-                    height={350}
-                    className="h-full w-full object-cover scale-125" 
-                    alt="image"
+                    className="h-full w-full object-cover scale-110" 
+                    alt={project.title}
                   />
-                  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] z-20"></div>
+
+                  {/* Scanline Grid Effect */}
+                  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] z-20 opacity-30"></div>
               </div>
             </div>
-            )
-          })}
+          ))}
         </div>
       </motion.div>
 
+      {/* INITIALIZE LABEL */}
       <motion.div 
         ref={cursorLabel}
-        /* Fixed Tailwind Conflict: Replaced 'hidden md:flex' with logic-based display */
-        className={`fixed top-0 left-0 w-20 h-20 rounded-full bg-accent text-white font-mono text-xs items-center justify-center pointer-events-none z-40 -translate-x-1/2 -translate-y-1/2 shadow-[0_0_20px_rgba(255,140,0,0.5)] ${modal.active ? 'md:flex' : 'hidden'}`}
+        className="fixed top-0 left-0 w-24 h-24 rounded-full bg-accent text-white font-mono text-[10px] tracking-tighter flex items-center justify-center pointer-events-none z-40 shadow-[0_0_30px_rgba(255,140,0,0.4)]"
         variants={scaleAnimation}
         initial="initial"
         animate={modal.active ? "enter" : "closed"}

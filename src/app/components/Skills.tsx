@@ -15,7 +15,7 @@ export default function Skills() {
     <section id="skills" className="relative py-24 px-4 md:px-12 bg-primary text-primary transition-colors duration-500">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-4xl md:text-6xl font-light mb-16 tracking-tighter">
-          Technical <span className="text-accent">Arsenal</span>
+          Technical <span className="text-accent">Skills</span>
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

@@ -3,10 +3,10 @@ import { motion } from 'motion/react';
 
 const bootSequence = [
   "Initializing_UofT_Eng_Core.sys...",
-  "Loading_Kernel_Modules...",
+  "Loading_Modules...",
   "Mounting_Seeron_Sivashankar.exe...",
-  "Checking_Peripherals: OK",
-  "Verifying_FPGA_Bitstream...",
+  "Checking_Life: Alive",
+  "Verifying_Bitstream...",
   "Establishing_Secure_Connection...",
   "System_Ready."
 ];
