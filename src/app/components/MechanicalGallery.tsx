@@ -1,106 +1,110 @@
-import React, { useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
-// --- ASSET IMPORTS (Standard Gallery) ---
-import img1 from '../../assets/UniDay1.png'; 
-import img2 from '../../assets/nephew_neice.png';
-import img3 from '../../assets/feelinfreshforprom.jpg';
-import img4 from '../../assets/monkeyseemonkeydo.jpg';
-import img5 from '../../assets/FROSH!!.png';
-import img6 from '../../assets/mariobaker.png';
-import img7 from '../../assets/theywantedtoknowificanmodel.jpg';
-import img8 from '../../assets/gym.png';
-import img9 from '../../assets/careernight.png';
-import img10 from '../../assets/lilbro.png';
-import img11 from '../../assets/lilsisgrad.jpg';
-import img12 from '../../assets/weddingszn.jpg';
-import img13 from '../../assets/Dontmesswiththesivashankars.jpg';
-import img14 from '../../assets/lookincute.png';
-import img15 from '../../assets/what_we_lookin_for 2.png';
-import img16 from '../../assets/cuzzo.png';
-import img17 from '../../assets/Mr.President.jpg';
-import img18 from '../../assets/💍.jpeg';
-import img19 from '../../assets/concert.jpg';
-import img20 from '../../assets/opencv_verilog.png';
-import img21 from '../../assets/formalflick.png';
-import img22 from '../../assets/TheFam.jpg';
-import img23 from '../../assets/grandpa.jpg';
-import img24 from '../../assets/grandma.jpg';
+// --- ASSETS ---
+// (Keeping your imports as they were)
+import img1 from '@/assets/compressed/UniDay1.jpg'; 
+import img2 from '@/assets/compressed/nephew_neice.jpg';
+import img3 from '@/assets/compressed/feelinfreshforprom.jpg';
+import img4 from '@/assets/compressed/monkeyseemonkeydo.jpg';
+import img5 from '@/assets/compressed/FROSH!!.jpg';
+import img6 from '@/assets/compressed/mariobaker.jpg';
+import img7 from '@/assets/compressed/theywantedtoknowificanmodel.jpg';
+import img8 from '@/assets/compressed/gym.jpg';
+import img9 from '@/assets/compressed/careernight.jpg';
+import img10 from '@/assets/compressed/lilbro.jpg';
+import img11 from '@/assets/compressed/lilsisgrad.jpg';
+import img12 from '@/assets/compressed/weddingszn.jpg';
+import img13 from '@/assets/compressed/Dontmesswiththesivashankars.jpg';
+import img14 from '@/assets/compressed/lookincute.jpg';
+import img15 from '@/assets/compressed/what_we_lookin_for.jpg'; 
+import img16 from '@/assets/compressed/cuzzo.jpg';
+import img17 from '@/assets/compressed/Mr.President.jpg';
+import img18 from '@/assets/compressed/💍.jpg'; 
+import img19 from '@/assets/compressed/concert.jpg';
+import img20 from '@/assets/compressed/opencv_verilog.jpg';
+import img21 from '@/assets/compressed/formalflick.jpg';
+import img22 from '@/assets/compressed/TheFam.jpg';
+import img23 from '@/assets/compressed/grandpa.jpg';
+import img24 from '@/assets/compressed/grandma.jpg';
+import s1 from '@/assets/compressed/thai_pongal.jpg';
+import s3 from '@/assets/compressed/aanin.jpg';
+import s4 from '@/assets/compressed/go_train.jpg';
+import s5 from '@/assets/compressed/by_the_rouge.jpg'; 
+import s20 from '@/assets/compressed/where_it_started.jpg';
+import s18 from '@/assets/compressed/firstphoto.jpg';
+import s15 from '@/assets/compressed/you_hard_at_work_and_me_hard.jpg';
+import s19 from '@/assets/compressed/im_in_love_but_she_dont_know.jpg';
+import n1 from '@/assets/compressed/middle_of_the_dance_floor.jpg';
+import n2 from '@/assets/compressed/urlockedin.jpg';
+import n3 from '@/assets/compressed/meinlove.jpg';
+import n4 from '@/assets/compressed/ur_pretty.jpg';
+import n5 from '@/assets/compressed/we_look_hot.jpg';
+import n6 from '@/assets/compressed/hot_and_nonchalant.jpg';
+import n7 from '@/assets/compressed/ugotmyheart.jpg';
+import n8 from '@/assets/compressed/Wetufffff.jpg';
+import n9 from '@/assets/compressed/pjparty.jpg';
 
-// --- ASSET IMPORTS (Secret Gallery) ---
-import s1 from '../../assets/thai_pongal.jpeg';
-import s2 from '../../assets/kisseyface.jpg';
-import s3 from '../../assets/aanin.jpeg';
-import s4 from '../../assets/go_train.JPG';
-import s5 from '../../assets/by_the _rouge.JPG';
-import s6 from '../../assets/goated_pool_partner.JPG';
-import s7 from '../../assets/sunlight.jpeg';
-import s8 from '../../assets/or_maybe_im_getting_yelled_at.jpeg';
-import s9 from '../../assets/i_think_she_proud_of_me.jpeg';
-import s10 from '../../assets/chill_on_da_couch.jpeg';
-import s11 from '../../assets/hiphoptamizha.jpeg';
-import s12 from '../../assets/yourfrosh.JPG';
-import s13 from '../../assets/confess_da_love.JPG';
-import s14 from '../../assets/camp_call.PNG';
-import s15 from '../../assets/you_hard_at_work_and_me_hard.PNG';
-import s16 from '../../assets/ahhhhh.JPG';
-import s17 from '../../assets/first_time_just_us.jpeg';
-import s18 from '../../assets/firstphoto.jpeg';
-import s19 from '../../assets/im_in_love_but_she_dont_know.JPG';
-import s20 from '../../assets/where_it_started.JPG';
+interface GalleryItem {
+  src: any;
+  desc: string;
+  isTrigger?: boolean;
+}
 
-// --- DATA STRUCTURES ---
-const galleryItems = [
+interface GalleryCardProps {
+  item: GalleryItem;
+  onTrigger?: () => void;
+  isSecret?: boolean;
+}
+
+const galleryItems: GalleryItem[] = [
   { src: img1, desc: "Uni Day 1s" },
   { src: img2, desc: "Nephew and Niece" },
   { src: img3, desc: "Feelin' Fresh for Prom" },
   { src: img4, desc: "Monkey See, Monkey Do" },
   { src: img5, desc: "FROSH!!" },
-  { src: img6, desc: "Call themselves Mario Baker or smth (weirdos)" },
-  { src: img7, desc: "They wanted to know if I can model" },
-  { src: img8, desc: "GYMMMM" },
-  { src: img9, desc: "Got me smilin' at Career Night" },
+  { src: img6, desc: "Mario Baker era" },
+  { src: img7, desc: "Model Status" },
+  { src: img8, desc: "Gym Flicks" },
+  { src: img9, desc: "Career Night" },
   { src: img10, desc: "Lil Bro" },
-  { src: img11, desc: "Lil Sis Graduation" },
+  { src: img11, desc: "Lil Sis Grad" },
   { src: img12, desc: "Wedding Szn" },
-  { src: img13, desc: "Don't mess with the Sivashankars" },
-  { src: img14, desc: "Feelin' Cute" },
+  { src: img13, desc: "Sivashankars" },
+  { src: img14, desc: "Lookin Cute" },
   { src: img22, desc: "The Fam" },
-  { src: img16, desc: "Don't let cuzzo find this pic" },
-  { src: img15, desc: "What we lookin' for again?" },
-  { src: img18, desc: "Locked in", isTrigger: true }, 
+  { src: img16, desc: "Cuzzo" },
+  { src: img15, desc: "What we looking for?" },
+  { src: img18, desc: "Locked in", isTrigger: true },
   { src: img19, desc: "First Concert" },
   { src: img21, desc: "Formal Flick" },
-  { src: img20, desc: "OpenCV + Verilog project with DUNDURAA" },
+  { src: img20, desc: "OpenCV Project" },
   { src: img17, desc: "Mr. President" },
-  { src: img23, desc: "Grandpa & ME" },
-  { src: img24, desc: "Grandma & ME" }
+  { src: img23, desc: "Grandpa" },
+  { src: img24, desc: "Grandma" }
 ];
 
-const secretGalleryItems = [
+const secretGalleryItems: GalleryItem[] = [
   { src: img18, desc: "Thangam/rani/wifey/baby/my everything ❤️" },
   { src: s20, desc: "Where it started" },
   { src: s18, desc: "First Photo" },
-  { src: s19, desc: "I'm in love but she don't know" },
-  { src: s1, desc: "Thai Pongal" },
-  { src: s2, desc: "Kissey Face" },
+  { src: n2, desc: "UR LOCKED IN" },
+  { src: n7, desc: "U got my heart" },
+  { src: n8, desc: "We tufffff" },
   { src: s3, desc: "Aanin" },
+  { src: n1, desc: "Middle of the dance floor" },
+  { src: n3, desc: "Me in love" },
+  { src: n4, desc: "Ur pretty" },
+  { src: n5, desc: "We look hot" },
+  { src: n6, desc: "Hot and nonchalant" },
+  { src: n9, desc: "PJ Party" },
+  { src: s1, desc: "Thai Pongal" },
   { src: s4, desc: "GO Train" },
   { src: s5, desc: "By the Rouge" },
-  { src: s6, desc: "Goated Pool Partner" },
-  { src: s7, desc: "Sunlight" },
-  { src: s8, desc: "Or maybe I'm getting yelled at" },
-  { src: s9, desc: "I think she proud of me" },
-  { src: s10, desc: "Chill on da couch" },
-  { src: s11, desc: "Hiphoptamizha" },
-  { src: s12, desc: "Your Frosh" },
-  { src: s13, desc: "Confess da love" },
-  { src: s14, desc: "Camp Call" },
-  { src: s15, desc: "You hard at work and me hard" },
-  { src: s16, desc: "Ahhhhh" },
-  { src: s17, desc: "First time just us" },
-  { src: img21, desc: "Why's there an extra character" },
+  { src: s15, desc: "Hard at work" },
+  { src: s19, desc: "In love but she don't know" },
+  { src: img21, desc: "Formal Flick extras" },
 ];
 
 export default function MechanicalGallery() {
@@ -109,169 +113,200 @@ export default function MechanicalGallery() {
 
   const startSecretSequence = () => {
     setIsAnimating(true);
-    
-    // Switch content during the black-out/zoom phase
+    // The delay here matches the "zoom" animation of the card
     setTimeout(() => {
       setIsSecretMode(true);
-    }, 3000);
-
-    // End overlay animation
-    setTimeout(() => {
       setIsAnimating(false);
-    }, 5500);
-  };
-
-  const handleExit = () => {
-    setIsSecretMode(false);
+      window.scrollTo(0, 0);
+    }, 2000);
   };
 
   return (
-    <section className="relative py-24 bg-primary text-primary min-h-screen border-t border-theme">
+    <div className={`min-h-screen transition-colors duration-1000 ${isSecretMode ? 'bg-black' : 'bg-primary'}`}>
       
-      {/* MAIN GALLERY */}
-      <div className="max-w-7xl mx-auto px-6">
-        <h2 className="text-4xl md:text-6xl font-light tracking-tighter mb-16">
-          Photo <span className="text-accent">Gallery</span>
-        </h2>
-        
-        <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}>
-          <Masonry gutter="24px">
-            {galleryItems.map((item, i) => (
-              <GalleryCard 
-                key={`reg-${i}`} 
-                item={item} 
-                onTrigger={item.isTrigger ? startSecretSequence : undefined} 
-              />
-            ))}
-          </Masonry>
-        </ResponsiveMasonry>
-      </div>
+      {/* PUBLIC GALLERY */}
+      {!isSecretMode && (
+        <section className="max-w-7xl mx-auto px-6 py-24">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-5xl md:text-7xl font-light tracking-tighter mb-16 text-primary">
+              Photo <span className="text-accent/80">Gallery</span>
+            </h2>
+          </motion.div>
 
-      {/* SECRET OVERLAY */}
-      <AnimatePresence>
+          <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}>
+            <Masonry gutter="32px">
+              {galleryItems.map((item, i) => (
+                <GalleryCard
+                  key={i}
+                  item={item}
+                  onTrigger={item.isTrigger ? startSecretSequence : undefined}
+                />
+              ))}
+            </Masonry>
+          </ResponsiveMasonry>
+        </section>
+      )}
+
+      {/* SECRET GALLERY */}
+      <AnimatePresence mode="wait">
         {isSecretMode && (
-          <motion.div 
+          <motion.section
+            key="secret-gallery"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[80] bg-primary overflow-y-auto pt-24 pb-32"
+            transition={{ duration: 1 }}
+            className="max-w-7xl mx-auto px-6 py-24"
           >
-            <div className="max-w-7xl mx-auto px-6">
-              <h2 className="text-4xl md:text-6xl font-light tracking-tighter mb-16 text-center">
-                Our <span className="text-accent">Story</span>
+            <div className="text-center mb-20">
+              <motion.span 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-pink-500 uppercase tracking-[0.4em] text-xs font-bold"
+              >
+                Access Granted
+              </motion.span>
+              <h2 className="text-5xl md:text-8xl font-extralight tracking-tighter text-white mt-4">
+                Our <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-600">Story</span>
               </h2>
-              
-              <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}>
-                <Masonry gutter="24px">
-                  {secretGalleryItems.map((item, i) => (
-                    <GalleryCard key={`sec-${i}`} item={item} />
-                  ))}
-                </Masonry>
-              </ResponsiveMasonry>
             </div>
 
-            <motion.div 
-              initial={{ y: 50, opacity: 0, x: "-50%" }}
-              animate={{ y: 0, opacity: 1, x: "-50%" }}
-              className="fixed bottom-12 left-1/2 z-[90]"
-            >
-              <button 
-                onClick={handleExit}
-                className="bg-secondary/90 backdrop-blur-xl text-accent border border-accent/30 px-10 py-4 rounded-full shadow-2xl hover:scale-105 transition-all flex items-center gap-3"
+            <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}>
+              <Masonry gutter="32px">
+                {secretGalleryItems.map((item, i) => (
+                  <GalleryCard key={i} item={item} isSecret />
+                ))}
+              </Masonry>
+            </ResponsiveMasonry>
+
+            <div className="flex justify-center mt-32 pb-20">
+              <button
+                onClick={() => setIsSecretMode(false)}
+                className="px-12 py-5 rounded-full border border-white/10 bg-white/5 text-white hover:bg-white/10 transition-all backdrop-blur-md tracking-widest text-sm uppercase"
               >
-                <span className="text-[10px] font-mono uppercase tracking-[0.3em]">Exit Story</span>
-                <span>🏠</span>
+                Return to your BF Website
               </button>
-            </motion.div>
-          </motion.div>
+            </div>
+          </motion.section>
         )}
       </AnimatePresence>
 
-      {/* PORTAL ANIMATION */}
+      {/* FULLSCREEN FLASH / OVERLAY */}
       <AnimatePresence>
         {isAnimating && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center overflow-hidden"
-          >
-            <motion.h2 
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: [0, 1, 1, 0], scale: [0.8, 1, 1.1, 1.2] }}
-              transition={{ duration: 3, times: [0, 0.2, 0.8, 1] }}
-              className="text-white text-4xl md:text-7xl font-bold tracking-[0.6em] uppercase absolute"
-            >
-              LOCKED IN
-            </motion.h2>
-
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: [0, 1, 250], opacity: [0, 1, 1] }}
-              transition={{ 
-                duration: 4, 
-                delay: 1.5, 
-                times: [0, 0.3, 1],
-                ease: [0.7, 0, 0.3, 1] 
-              }}
-              className="relative flex items-center justify-center"
-            >
-              <svg width="150" height="150" viewBox="0 0 24 24" fill="white">
-                <path d="M12 1a5 5 0 0 0-5 5v4H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm-3 5a3 3 0 0 1 6 0v4H9V6z" />
-                <path d="M12 16.5s-.4-.4-.8-.4c-.5 0-.9.4-.9 1 0 .8 1.7 1.8 1.7 1.8s1.7-1 1.7-1.8c0-.6-.4-1-.9-1-.4 0-.8.4-.8.4z" fill="red" />
-              </svg>
-            </motion.div>
-          </motion.div>
+            className="fixed inset-0 z-100 bg-white pointer-events-none mix-blend-difference"
+          />
         )}
       </AnimatePresence>
-    </section>
+    </div>
   );
 }
 
-function GalleryCard({ item, onTrigger }) {
-  const [holdProgress, setHoldProgress] = useState(0);
-  const timerRef = useRef(null);
+function GalleryCard({ item, onTrigger, isSecret }: GalleryCardProps) {
+  const [isHolding, setIsHolding] = useState(false);
+  const controls = useAnimation();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const startHold = () => {
     if (!onTrigger) return;
-    const startTime = Date.now();
-    timerRef.current = setInterval(() => {
-      const p = Math.min(((Date.now() - startTime) / 3000) * 100, 100); // Set to 3 seconds for easier trigger
-      setHoldProgress(p);
-      if (p >= 100) {
-        clearInterval(timerRef.current);
-        onTrigger();
-        setHoldProgress(0);
-      }
-    }, 50);
+    setIsHolding(true);
+    
+    // Intense vibration effect
+    controls.start({
+      x: [0, -1, 1, -1, 1, 0],
+      transition: { duration: 0.1, repeat: Infinity }
+    });
+
+    timerRef.current = setTimeout(() => {
+      onTrigger();
+      setIsHolding(false);
+    }, 2000);
   };
 
-  const endHold = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    setHoldProgress(0);
+  const cancelHold = () => {
+    setIsHolding(false);
+    controls.stop();
+    controls.set({ x: 0 });
+    if (timerRef.current) clearTimeout(timerRef.current);
   };
 
   return (
-    <motion.div 
-      className="relative rounded-2xl overflow-hidden border border-theme bg-secondary group select-none cursor-crosshair"
-      onMouseDown={startHold} onMouseUp={endHold} onMouseLeave={endHold}
-      onTouchStart={startHold} onTouchEnd={endHold}
+    <motion.div
+      animate={controls}
+      className="relative group"
+      onMouseDown={startHold}
+      onMouseUp={cancelHold}
+      onMouseLeave={cancelHold}
+      onTouchStart={startHold}
+      onTouchEnd={cancelHold}
     >
-      {holdProgress > 0 && (
-        <div 
-          className="absolute top-0 left-0 h-1.5 bg-accent z-[60]" 
-          style={{ width: `${holdProgress}%`, transition: 'width 0.1s linear' }} 
-        />
-      )}
-      <img src={item.src} alt="" className="w-full h-auto block transition-all duration-700 group-hover:scale-105" />
-      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center p-6 text-center backdrop-blur-[2px]">
-        <p className="text-white font-light italic text-sm">"{item.desc}"</p>
-        {onTrigger && (
-          <span className="mt-4 text-accent text-[10px] tracking-[0.2em] font-mono animate-pulse uppercase">
-            {holdProgress > 0 ? 'Unlocking...' : '...'}
-          </span>
+      {/* THE PREMIUM GLOW: Multiple layers for depth */}
+      <AnimatePresence>
+        {isHolding && (
+          <>
+            {/* Outer Soft Glow */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1.2 }}
+              exit={{ opacity: 0 }}
+              className="absolute -inset-4 z-0 bg-purple-600/30 blur-2xl rounded-full"
+            />
+            {/* Inner Intense Beam */}
+            <motion.div
+              initial={{ rotate: 0 }}
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              className="absolute -inset-1 z-0 bg-linear-to-r from-purple-500 via-pink-500 to-purple-500 blur-md rounded-2xl"
+            />
+          </>
         )}
-      </div>
+      </AnimatePresence>
+
+      {/* CARD BODY */}
+      <motion.div
+        animate={isHolding ? { 
+          scale: 0.95,
+          filter: "brightness(1.2) contrast(1.1)",
+        } : { 
+          scale: 1,
+          filter: "brightness(1) contrast(1)",
+        }}
+        className={`relative z-10 rounded-2xl overflow-hidden border transition-all duration-500 ${
+          isSecret ? 'border-white/10 bg-zinc-900' : 'border-theme bg-secondary'
+        }`}
+      >
+        <img
+          src={item.src}
+          alt={item.desc}
+          className="w-full h-auto block grayscale-20 group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+        />
+
+        {/* ELEGANT OVERLAY */}
+        <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-6">
+          <p className="text-white text-sm font-light tracking-wide leading-relaxed">
+            {item.isTrigger && !isHolding ? "..." : item.desc}
+          </p>
+          
+          {isHolding && (
+            <div className="w-full bg-white/20 h-px mt-4 overflow-hidden">
+              <motion.div 
+                initial={{ x: '-100%' }}
+                animate={{ x: '0%' }}
+                transition={{ duration: 2, ease: "linear" }}
+                className="w-full h-full bg-linear-to-r from-purple-400 to-pink-500"
+              />
+            </div>
+          )}
+        </div>
+      </motion.div>
     </motion.div>
   );
 }

@@ -58,7 +58,7 @@ export default function Hero() {
       </div>
       
       {/* 2. Central Interactive Hero Image */}
-      <div className="relative z-10 w-[300px] h-[300px] md:w-[400px] md:h-[400px] perspective-1000 mb-4">
+      <div className="relative z-10 w-75 h-75 md:w-100 md:h-100 perspective-1000 mb-4">
         <div 
             ref={imageContainer} 
             className="w-full h-full relative preserve-3d"
