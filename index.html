@@ -7,8 +7,22 @@
 
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Seeron Sivashankar</title>
-      <script type="module" crossorigin src="./assets/index-CVQOOWVE.js"></script>
-      <link rel="stylesheet" crossorigin href="./assets/index-D4CJiT66.css">
+      <script>
+        (function() {
+          try {
+            var storedTheme = localStorage.getItem('theme');
+            if (storedTheme === 'light') {
+              document.documentElement.setAttribute('data-theme', 'light');
+            } else if (storedTheme === 'dark') {
+              document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+              document.documentElement.setAttribute('data-theme', 'dark'); // Default
+            }
+          } catch (e) {}
+        })();
+      </script>
+      <script type="module" crossorigin src="./assets/index-3EgcqgpE.js"></script>
+      <link rel="stylesheet" crossorigin href="./assets/index-BuzaIvBL.css">
     </head>
 
     <body>
