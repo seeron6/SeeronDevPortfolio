@@ -1,11 +1,28 @@
+# Seeron Sivashankar — Portfolio
 
-  # Portfolio website design
+Live at **[seeronsivashankar.com](https://www.seeronsivashankar.com)**.
 
-  Started on Figma, and kept expanding
+A parchment-scroll portfolio: hero + every chapter on a single scroll, click any
+chapter title to zoom in. Built with Vite + React + TypeScript + Tailwind v4.
 
-  ## Running the code
+## Local development
 
-  Run `npm i` to install the dependencies.
+```bash
+npm install
+npm run dev
+```
 
-  Run `npm run dev` to start the development server.
-  
+Open http://localhost:5173.
+
+## Deploy
+
+The site is published to GitHub Pages from the `gh-pages` branch using the
+`gh-pages` npm package. To redeploy:
+
+```bash
+npm run deploy
+```
+
+This builds the project (`vite build`) and pushes the `dist/` directory to the
+`gh-pages` branch. The custom domain (`seeronsivashankar.com`) is configured via
+the `CNAME` file in `public/`.

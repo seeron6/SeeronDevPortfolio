@@ -1,127 +1,581 @@
-@import './fonts.css';
-@import './tailwind.css';
-@import './theme.css';
+@import "tailwindcss";
 
-:root {
-  /* Default Warm Dark Theme */
-  --bg-primary: #121212;
-  --bg-secondary: #1C1D20;
-  --text-primary: #E0E0E0;
-  --text-secondary: #A0A0A0;
-  --accent-color: #FF8C00; /* Sunset Amber */
-  --accent: #FF8C00;       /* Syncing with Tailwind's --color-accent */
-  --border-color: rgba(255, 255, 255, 0.1);
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --scanline-opacity: 0.2;
-}
+@theme {
+  --color-parchment: #ebd9b0;
+  --color-parchment-mid: #d8c290;
+  --color-parchment-dark: #b89e64;
+  --color-parchment-shadow: #8b6f3a;
+  --color-parchment-edge: #6b4a18;
 
-[data-theme='light'] {
-  /* Creamy Minimalist Theme */
-  --bg-primary: #F5F5F7;
-  --bg-secondary: #EAEAEC;
-  --text-primary: #1C1D20;
-  --text-secondary: #555555;
-  --accent-color: #D4AF37; /* Deep Gold */
-  --accent: #D4AF37;       /* Fix: This was previously light gray (#e9ebef) */
-  --border-color: rgba(0, 0, 0, 0.1);
-  --glass-bg: rgba(0, 0, 0, 0.03);
-  --scanline-opacity: 0.05;
+  --color-ink: #1c1208;          /* darker for readability against aged parchment */
+  --color-ink-soft: #3a2814;
+  --color-ink-faded: #6b5430;
+  --color-sepia: #8b6f47;
+  --color-wax: #9b3a2a;
+  --color-wax-deep: #6b2418;
+
+  --color-wood-light: #6b4220;
+  --color-wood: #3a2410;
+  --color-wood-dark: #1a0e06;
+
+  --color-brass: #c9a35c;
+  --color-brass-dark: #6b4818;
+
+  --font-serif: "Cormorant Garamond", "EB Garamond", Georgia, serif;
+  --font-script: "Caveat", "Homemade Apple", cursive;
+  --font-script-formal: "Cedarville Cursive", "Caveat", cursive;
 }
 
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
-  overflow-x: hidden;
-  transition: background-color 0.5s ease, color 0.5s ease;
-}
+* { box-sizing: border-box; }
 
-/* Fix for vanishing hover text */
-a, button {
-  transition: color 0.3s ease, opacity 0.3s ease;
-}
-
-a:hover, button:hover {
-  mix-blend-mode: normal !important; /* Prevents difference math from hiding text */
-  isolation: isolate;
-}
-
-.font-mono {
-  font-family: 'JetBrains Mono', monospace;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-primary);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--bg-secondary);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-color);
-}
-
-/* Lenis Scroll Logic */
-html.lenis, html.lenis body {
-  height: auto;
-}
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-.lenis.lenis-stopped {
+html, body {
+  margin: 0;
+  padding: 0;
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   overflow: hidden;
 }
 
-/* Overlays */
-.scanlines {
+#root {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+::selection { background: rgba(155, 58, 42, 0.25); color: var(--color-ink); }
+
+/* ───────────── Scene — uses the user-provided scroll image as the
+   ──────────────  full-page background. Content sits inside the parchment. */
+
+.scene {
+  position: fixed;
+  inset: 0;
+  background-color: #1a0e06;
+  overflow: hidden;
+}
+
+/* The scroll image fills the entire viewport (cover). On portrait
+   viewports it rotates 90° so the scroll runs vertically. */
+.scroll-frame {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.scroll-bg-img {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;        /* override Tailwind preflight */
+  max-height: none;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: 0;
+}
+
+/* Portrait — rotate the landscape image 90° so it fits a vertical screen */
+@media (orientation: portrait) {
+  .scroll-bg-img {
+    /* Pre-rotation dimensions: when rotated 90°, the element's visual
+       width = element's height, and visual height = element's width.
+       We want visual = viewport, so element width = vh and height = vw. */
+    top: 50%;
+    left: 50%;
+    width: 100vh;
+    height: 100vw;
+    transform: translate(-50%, -50%) rotate(90deg);
+    transform-origin: center;
+  }
+}
+
+/* Vignette to focus the eye on the centred parchment */
+.scene::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.45) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* The actual writeable parchment area inside the image.
+   These percentages map to where the cream-coloured paper sits in the
+   reference (between the two rolled ends, above/below the wood frame).
+   The right side leaves room for the pencils/quill in the image. */
+/* Parchment writing area within the scroll image. The percentages
+   correspond to the cream-coloured paper between the rolled ends and
+   the wooden plank top/bottom strips — measured against the actual
+   rendered scroll.jpg (2000×1090) under cover-scaling. */
+.scroll-content {
+  position: fixed;
+  left: 11%;
+  right: 19%;
+  top: 12%;
+  bottom: 20%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: clamp(14px, 1.6vw, 28px) clamp(12px, 1.4vw, 24px);
+  z-index: 3;
+}
+
+/* Wider-than-image (ultrawide) — image scales by width, parchment
+   shrinks vertically. */
+@media (min-aspect-ratio: 19/9) {
+  .scroll-content { top: 18%; bottom: 22%; }
+}
+
+/* Narrower than the image (parchment fills more of the width because
+   the rolled ends + pencils crop off-screen). */
+@media (max-aspect-ratio: 1500/1000) {
+  .scroll-content {
+    left: 5%;
+    right: 5%;
+    top: 13%;
+    bottom: 21%;
+  }
+}
+
+/* Portrait — image is rotated 90°; the parchment runs top-to-bottom.
+   Cover-cropping makes the parchment tall but narrow. Measured against
+   the rotated render: parchment occupies x=20-88%, y=0-96% of viewport. */
+@media (orientation: portrait) {
+  .scroll-content {
+    left: 21%;
+    right: 13%;
+    top: 4%;
+    bottom: 6%;
+  }
+}
+.scroll-content::-webkit-scrollbar { width: 6px; }
+.scroll-content::-webkit-scrollbar-track { background: transparent; }
+.scroll-content::-webkit-scrollbar-thumb {
+  background: rgba(120, 80, 35, 0.35);
+  border-radius: 3px;
+}
+
+/* (Stale portrait rules removed — handled by the cleaner @media
+   (orientation: portrait) block above.) */
+
+/* ───────────── Type ───────────── */
+.script { font-family: var(--font-script); font-weight: 500; letter-spacing: 0.01em; }
+/* `script-formal` was Cedarville Cursive (illegible on aged paper). Now an
+   elegant serif italic — more readable while keeping the editorial feel. */
+.script-formal {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.serif { font-family: var(--font-serif); }
+.smallcaps { font-variant: all-small-caps; letter-spacing: 0.18em; }
+
+/* ───────────── Handwriting reveal ───────────── */
+@keyframes inkSweep {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+.hw-inked {
+  clip-path: inset(0 100% 0 0);
+  animation: inkSweep var(--dur, 2.4s) cubic-bezier(0.65, 0, 0.35, 1) var(--del, 0.15s) forwards;
+}
+
+@keyframes nibSweep {
+  0%   { left: 0;     opacity: 0; }
+  6%   { opacity: 0.55; }
+  94%  { opacity: 0.55; }
+  100% { left: 100%; opacity: 0; }
+}
+.hw-nib {
+  position: absolute;
+  top: 8%;
+  bottom: 8%;
+  left: 0;
+  width: 2px;
+  background: linear-gradient(180deg, transparent, var(--color-ink), transparent);
+  opacity: 0;
+  pointer-events: none;
+  animation: nibSweep var(--dur, 2.4s) cubic-bezier(0.65, 0, 0.35, 1) var(--del, 0.15s) forwards;
+}
+
+.ink-word {
+  opacity: 0;
+  filter: blur(2px);
+  display: inline-block;
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+.ink-word.visible { opacity: 1; filter: blur(0); }
+
+/* ───────────── Favourites cards ───────────── */
+.favourite-section {
+  display: flex;
+  flex-direction: column;
+}
+.favourite-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 8px 0;
+}
+.favourite-card-text {
+  flex: 1;
+  min-width: 0;
+  padding-top: 4px;
+}
+
+/* ───────────── Laser-writing reveal ───────────── */
+.laser-text {
+  position: relative;
+}
+.laser-text .laser-char {
+  opacity: 0;
+  transition: opacity 60ms ease, color 200ms ease;
+  position: relative;
+}
+.laser-text .laser-char.lit {
+  opacity: 1;
+}
+.laser-text .laser-char.recent {
+  color: var(--color-wax);
+  text-shadow: 0 0 8px rgba(155, 58, 42, 0.45);
+}
+.laser-text .laser-char.cursor::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: 0.05em;
+  bottom: 0.1em;
+  width: 2px;
   background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0),
-    rgba(255, 255, 255, 0) 50%,
-    rgba(0, 0, 0, 0.2) 50%,
-    rgba(0, 0, 0, 0.2)
+    180deg,
+    rgba(194, 80, 64, 0) 0%,
+    rgba(194, 80, 64, 0.95) 30%,
+    rgba(232, 100, 80, 1) 50%,
+    rgba(194, 80, 64, 0.95) 70%,
+    rgba(194, 80, 64, 0) 100%
   );
-  background-size: 100% 4px;
+  box-shadow:
+    0 0 6px rgba(232, 100, 80, 0.95),
+    0 0 14px rgba(194, 80, 64, 0.6),
+    0 0 24px rgba(155, 58, 42, 0.35);
+  animation: laserPulse 0.6s ease-in-out infinite alternate;
   pointer-events: none;
-  z-index: 9999;
-  opacity: var(--scanline-opacity);
-  transition: opacity 0.5s ease;
+}
+@keyframes laserPulse {
+  from { opacity: 0.85; transform: scaleY(1); }
+  to   { opacity: 1;    transform: scaleY(1.05); }
 }
 
-.noise {
+/* ───────────── Ink decorations ───────────── */
+.ink-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  color: var(--color-ink-faded);
+}
+.ink-divider::before,
+.ink-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-ink-faded), transparent);
+  opacity: 0.5;
+}
+
+/* photo / project frame on parchment */
+.parchment-frame {
+  background: linear-gradient(180deg, #fbf5e3 0%, #f5e9c8 100%);
+  padding: 12px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 0 0 1px rgba(120, 90, 50, 0.15),
+    0 4px 12px rgba(60, 30, 10, 0.18),
+    0 18px 40px -12px rgba(60, 30, 10, 0.25);
+  position: relative;
+}
+.parchment-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='2'/><feColorMatrix values='0 0 0 0 0.2  0 0 0 0 0.15  0 0 0 0 0.08  0 0 0 0.12 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+/* ───────────── Section title — clickable on overview ───────────── */
+.section-title-link {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--color-ink);
+  font-family: var(--font-script);
+  font-weight: 500;
+  transition: color 0.4s ease, transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.section-title-link::after {
+  content: "";
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: -6px;
+  height: 1.5px;
+  background: var(--color-ink-faded);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.section-title-link:hover::after { transform: scaleX(1); }
+.section-title-link:hover {
+  color: var(--color-wax);
+  transform: translateY(-2px);
+}
+
+/* ───────────── Wax seal ───────────── */
+.wax-seal {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #c25040 0%, var(--color-wax) 40%, var(--color-wax-deep) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f0d8b0;
+  font-family: var(--font-script-formal);
+  font-size: 1.6rem;
+  box-shadow:
+    inset 0 -4px 8px rgba(40, 10, 5, 0.6),
+    inset 0 3px 6px rgba(255, 200, 180, 0.4),
+    0 4px 10px rgba(60, 20, 10, 0.4);
+  position: relative;
+}
+.wax-seal::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 1px dashed rgba(40, 10, 5, 0.4);
+}
+
+/* (Desk objects — quill, inkwell, pencils — are part of the scroll.png
+   image; no CSS needed.) */
+
+/* ───────────── Bottom navigation ───────────── */
+.nav-pill {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 9998;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  background: linear-gradient(180deg, rgba(28, 18, 10, 0.85) 0%, rgba(18, 12, 6, 0.92) 100%);
+  border: 1px solid rgba(180, 140, 80, 0.35);
+  border-radius: 999px;
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 1px 0 rgba(255, 220, 170, 0.1) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.4) inset,
+    0 12px 30px rgba(0, 0, 0, 0.55),
+    0 30px 80px -20px rgba(0, 0, 0, 0.7);
+  font-family: var(--font-serif);
 }
 
-/* Utility Classes */
-.bg-primary { background-color: var(--bg-primary); }
-.bg-secondary { background-color: var(--bg-secondary); }
-.text-primary { color: var(--text-primary); }
-.text-secondary { color: var(--text-secondary); }
-.text-accent { color: var(--accent-color); }
-.border-theme { border-color: var(--border-color); }
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  color: rgba(245, 234, 208, 0.65);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: color 0.3s ease, transform 0.3s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.nav-item:hover {
+  color: rgba(245, 234, 208, 0.95);
+  transform: translateY(-2px);
+}
+.nav-item-active { color: #fdf6e3; }
+.nav-item-active:hover { transform: none; }
 
-.glass-panel {
-  background: var(--glass-bg);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border-color);
+.nav-icon {
+  position: relative;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+}
+
+.nav-item-indicator {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(155, 58, 42, 0.85) 0%, rgba(107, 36, 24, 0.95) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 200, 180, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 4px 12px rgba(155, 58, 42, 0.4);
+  z-index: 0;
+}
+
+@media (max-width: 480px) {
+  .nav-pill { padding: 4px; gap: 2px; }
+  .nav-item { width: 38px; height: 38px; }
+  .nav-icon { width: 18px; height: 18px; }
+}
+
+/* ───────────── Scrapbook (gallery detail) ───────────── */
+.scrapbook {
+  column-count: 2;
+  column-gap: 24px;
+}
+@media (min-width: 760px) {
+  .scrapbook { column-count: 3; column-gap: 32px; }
+}
+@media (min-width: 1280px) {
+  .scrapbook { column-count: 4; column-gap: 36px; }
+}
+.scrapbook-tile {
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 24px 0;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1), box-shadow 0.5s ease;
+  will-change: transform;
+}
+.scrapbook-tile:hover {
+  transform: rotate(0deg) scale(1.03) !important;
+  z-index: 4;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 0 0 1px rgba(120, 90, 50, 0.18),
+    0 8px 20px rgba(60, 30, 10, 0.3),
+    0 28px 60px -14px rgba(60, 30, 10, 0.4);
+}
+
+/* ───────────── Back button ───────────── */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  background: transparent;
+  border: 1px solid rgba(122, 100, 66, 0.35);
+  padding: 10px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.back-button:hover {
+  color: var(--color-wax);
+  border-color: var(--color-wax);
+  background: rgba(155, 58, 42, 0.06);
+  transform: translateX(-3px);
+}
+
+/* ───────────── Zoomable sections (overview ↔ focus) ───────────── */
+.zoomable-section {
+  position: relative;
+  margin: 0 auto;
+  max-width: 64rem;
+  padding: 1.5rem 0;
+  transition: opacity 0.45s ease, transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.zoomable-title {
+  display: inline-block;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.zoomable-title::after {
+  content: "";
+  position: absolute;
+  left: 8%; right: 8%;
+  bottom: -4px;
+  height: 1.5px;
+  background: var(--color-ink-faded);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.zoomable-title:hover::after { transform: scaleX(1); }
+.zoomable-title:hover { color: var(--color-wax); }
+
+/* Overview mode: all sections visible inline */
+.overview-mode .zoomable-section {
+  /* default — full content visible */
+}
+
+/* Focus mode: only the focused section visible, animated in */
+.focus-mode .zoomable-section:not(.is-focused) {
+  display: none;
+}
+.focus-mode .zoomable-section.is-focused {
+  animation: zoomIn 0.55s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* When a section is focused, its title links upgrade to "click to close" */
+.is-focused .zoomable-title { cursor: zoom-out; }
+.zoomable-section:not(.is-focused) .zoomable-title { cursor: zoom-in; }
+
+/* ───────────── Animations ───────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.7s cubic-bezier(0.65, 0, 0.35, 1) both; }
+
+@keyframes settleIn {
+  from { opacity: 0; transform: translateY(24px) rotate(-3deg); }
+  to   { opacity: 1; transform: translateY(0)    rotate(-2deg); }
+}
+.settle-in { animation: settleIn 1.2s cubic-bezier(0.65, 0, 0.35, 1) both; }
+
+@keyframes navIn {
+  from { opacity: 0; transform: translate(-50%, 12px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+.nav-in { animation: navIn 0.7s cubic-bezier(0.65, 0, 0.35, 1) 1.4s both; }
+
+/* Cross-fade between views (key change triggers fresh animation) */
+@keyframes viewFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.view-fade { animation: viewFade 0.45s cubic-bezier(0.65, 0, 0.35, 1) both; }
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
