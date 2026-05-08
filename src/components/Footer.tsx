@@ -1,10 +1,11 @@
+import { Linkedin, Github, Instagram, type LucideIcon } from 'lucide-react';
 import DetailView from './DetailView';
 import InkText from './InkText';
 
-const links = [
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/seeron-sivashankar/' },
-  { label: 'GitHub', href: 'https://github.com/seeron6' },
-  { label: 'Instagram', href: 'https://www.instagram.com/seeronsiva' },
+const links: { label: string; href: string; Icon: LucideIcon }[] = [
+  { label: 'LinkedIn',  href: 'https://www.linkedin.com/in/seeron-sivashankar/', Icon: Linkedin  },
+  { label: 'GitHub',    href: 'https://github.com/seeron6',                       Icon: Github    },
+  { label: 'Instagram', href: 'https://www.instagram.com/seeronsiva',             Icon: Instagram },
 ];
 
 export default function Footer() {
@@ -37,16 +38,18 @@ export default function Footer() {
           <span>elsewhere</span>
         </div>
 
-        <div className="flex justify-center gap-8 md:gap-12 mb-16">
+        <div className="flex justify-center items-center gap-6 md:gap-8 mb-16">
           {links.map((l) => (
             <a
               key={l.label}
               href={l.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="serif italic text-ink-soft text-base md:text-lg hover:text-wax transition-colors smallcaps"
+              aria-label={l.label}
+              title={l.label}
+              className="social-icon social-icon-lg text-ink-soft hover:text-wax transition-all"
             >
-              {l.label}
+              <l.Icon strokeWidth={1.5} />
             </a>
           ))}
         </div>

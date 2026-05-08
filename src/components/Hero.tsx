@@ -1,3 +1,4 @@
+import { Linkedin, Github, Instagram } from 'lucide-react';
 import Handwriting from './Handwriting';
 import heroImage from '../assets/heroImage.jpg';
 
@@ -50,17 +51,46 @@ export default function Hero() {
               +1 (647) 282-4910
             </a>
           </div>
-          <div className="flex flex-wrap gap-x-5 gap-y-2 mt-4 serif italic text-[11px] md:text-xs">
-            <a href="/resume.pdf" target="_blank" rel="noopener noreferrer"
-              className="text-ink hover:text-wax transition-colors smallcaps tracking-[0.18em] underline decoration-dotted underline-offset-[6px] decoration-ink-faded">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3 mt-4">
+            <a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="serif italic smallcaps tracking-[0.18em] text-sm text-ink hover:text-wax transition-colors underline decoration-dotted underline-offset-[6px] decoration-ink-faded"
+            >
               Résumé ↗
             </a>
-            <a href="https://www.linkedin.com/in/seeron-sivashankar/" target="_blank" rel="noopener noreferrer"
-              className="text-ink-soft hover:text-wax transition-colors smallcaps tracking-[0.18em]">LinkedIn</a>
-            <a href="https://github.com/seeron6" target="_blank" rel="noopener noreferrer"
-              className="text-ink-soft hover:text-wax transition-colors smallcaps tracking-[0.18em]">GitHub</a>
-            <a href="https://www.instagram.com/seeronsiva" target="_blank" rel="noopener noreferrer"
-              className="text-ink-soft hover:text-wax transition-colors smallcaps tracking-[0.18em]">Instagram</a>
+            <span className="text-ink-faded/40">·</span>
+            <a
+              href="https://www.linkedin.com/in/seeron-sivashankar/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              title="LinkedIn"
+              className="social-icon text-ink-soft hover:text-wax transition-all"
+            >
+              <Linkedin strokeWidth={1.6} />
+            </a>
+            <a
+              href="https://github.com/seeron6"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+              title="GitHub"
+              className="social-icon text-ink-soft hover:text-wax transition-all"
+            >
+              <Github strokeWidth={1.6} />
+            </a>
+            <a
+              href="https://www.instagram.com/seeronsiva"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              title="Instagram"
+              className="social-icon text-ink-soft hover:text-wax transition-all"
+            >
+              <Instagram strokeWidth={1.6} />
+            </a>
           </div>
         </div>
 

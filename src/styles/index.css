@@ -156,12 +156,12 @@ html, body {
     bottom: 12%;
   }
 }
-.scroll-content::-webkit-scrollbar { width: 6px; }
-.scroll-content::-webkit-scrollbar-track { background: transparent; }
-.scroll-content::-webkit-scrollbar-thumb {
-  background: rgba(120, 80, 35, 0.35);
-  border-radius: 3px;
+/* Hide the scrollbar entirely (still scrollable, just invisible) */
+.scroll-content {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* old Edge / IE */
 }
+.scroll-content::-webkit-scrollbar { display: none; }   /* Chrome / Safari */
 
 /* (Stale portrait rules removed — handled by the cleaner @media
    (orientation: portrait) block above.) */
@@ -214,6 +214,39 @@ html, body {
   transition: opacity 0.5s ease, filter 0.5s ease;
 }
 .ink-word.visible { opacity: 1; filter: blur(0); }
+
+/* ───────────── Social icon links ───────────── */
+.social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(122, 100, 66, 0.25);
+  background: rgba(245, 234, 208, 0.35);
+  transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1),
+              color 0.3s ease,
+              border-color 0.3s ease,
+              background 0.3s ease;
+}
+.social-icon svg {
+  width: 16px;
+  height: 16px;
+}
+.social-icon:hover {
+  transform: translateY(-2px);
+  border-color: rgba(155, 58, 42, 0.55);
+  background: rgba(245, 234, 208, 0.7);
+}
+.social-icon-lg {
+  width: 46px;
+  height: 46px;
+}
+.social-icon-lg svg {
+  width: 20px;
+  height: 20px;
+}
 
 /* ───────────── Favourites cards ───────────── */
 .favourite-section {
