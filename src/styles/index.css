@@ -82,17 +82,17 @@ html, body {
   z-index: 0;
 }
 
-/* Portrait — rotate the landscape image 90° so it fits a vertical screen */
+/* Portrait — rotate the landscape image 90° so it fits a vertical screen.
+   The extra scale(1.25) zooms the image so the parchment occupies a larger
+   share of the viewport (less of the rolled-paper edge and surrounding wood
+   are visible) — at the cost of slightly more cropping at the corners. */
 @media (orientation: portrait) {
   .scroll-bg-img {
-    /* Pre-rotation dimensions: when rotated 90°, the element's visual
-       width = element's height, and visual height = element's width.
-       We want visual = viewport, so element width = vh and height = vw. */
     top: 50%;
     left: 50%;
     width: 100vh;
     height: 100vw;
-    transform: translate(-50%, -50%) rotate(90deg);
+    transform: translate(-50%, -50%) rotate(90deg) scale(1.25);
     transform-origin: center;
   }
 }
@@ -144,15 +144,18 @@ html, body {
   }
 }
 
-/* Portrait — image is rotated 90°; the parchment runs top-to-bottom.
-   Cover-cropping makes the parchment tall but narrow. Measured against
-   the rotated render: parchment occupies x=20-88%, y=0-96% of viewport. */
+/* Portrait — image is rotated 90° and zoomed; the parchment now runs
+   top-to-bottom and occupies most of the visible viewport. The percentages
+   below leave a small margin from the parchment edges and clear the bottom
+   rolled-paper end + the floating navigation pill. */
 @media (orientation: portrait) {
   .scroll-content {
-    left: 21%;
-    right: 13%;
-    top: 4%;
-    bottom: 6%;
+    left: 8%;
+    right: 8%;
+    top: 6%;
+    /* extra bottom space so the bottom rolled-paper edge and the floating
+       nav pill stay clear of body content */
+    bottom: 14%;
   }
 }
 .scroll-content::-webkit-scrollbar { width: 6px; }
