@@ -29,7 +29,7 @@ const projects: Project[] = [
   {
     n: 'I',
     title: 'Sage',
-    medium: 'AI tutoring · Next.js · FastAPI · Groq',
+    medium: 'Next.js · FastAPI · Groq',
     award: 'LA Hacks 2026 — Cloudinary Company Challenge',
     body: `An AI tutoring platform that bridges teachers and students with adaptive, multimodal lessons grounded in your own curriculum — voice support, multiple explanation modes, and interactive content rendered with KaTeX, Mermaid, and React Three Fiber.`,
     image: sageImg,
