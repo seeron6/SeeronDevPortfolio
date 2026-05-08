@@ -147,13 +147,10 @@ html, body {
    rolled-paper end + the floating navigation pill. */
 @media (orientation: portrait) {
   .scroll-content {
-    /* These bounds match the visible parchment area on a phone-sized viewport.
-       The parchment in the rotated, cover-fitted image lives roughly at
-       x: 15%–95%, y: 11%–81% of the viewport — content stays inside that
-       window and leaves room for the bottom rolled-paper edge + floating
-       nav pill. */
-    left: 17%;
-    right: 8%;
+    /* Symmetric bounds well inside the visible parchment area, with extra
+       bottom space for the rolled-paper edge + floating nav pill. */
+    left: 22%;
+    right: 22%;
     top: 14%;
     bottom: 22%;
   }
