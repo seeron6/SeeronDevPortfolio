@@ -30,8 +30,8 @@ const projects: Project[] = [
     n: 'I',
     title: 'Sage',
     medium: 'Next.js · FastAPI · Groq',
-    award: 'LA Hacks 2026 — Cloudinary Company Challenge',
-    body: `An AI tutoring platform that bridges teachers and students with adaptive, multimodal lessons grounded in your own curriculum — voice support, multiple explanation modes, and interactive content rendered with KaTeX, Mermaid, and React Three Fiber.`,
+    award: 'LA Hacks 2026 · Cloudinary Company Challenge',
+    body: `An AI tutoring platform that bridges teachers and students with adaptive, multimodal lessons grounded in your own curriculum, with voice support, multiple explanation modes, and interactive content rendered using KaTeX, Mermaid, and React Three Fiber.`,
     image: sageImg,
     link: 'https://devpost.com/software/sage-yvlpqb',
     rotate: -1.5,
@@ -40,7 +40,7 @@ const projects: Project[] = [
     n: 'II',
     title: 'NanoTrade',
     medium: 'Verilog · Skywater 130nm ASIC',
-    award: 'UofT IC Hackathon — 3rd Place',
+    award: 'UofT IC Hackathon · 3rd Place',
     body: `An application-specific integrated circuit that detects financial market crashes in 80 nanoseconds, monitoring multiple anomaly types in parallel. Implemented in Verilog on Skywater 130nm via Tiny Tapeout.`,
     image: nanotradeImg,
     link: 'https://devpost.com/software/nanotrade',
@@ -50,7 +50,7 @@ const projects: Project[] = [
     n: 'III',
     title: 'Revenant',
     medium: 'AI memory · pgvector · RAG',
-    award: 'GenAI Genesis 2026 — Best AI Application (Memory)',
+    award: 'GenAI Genesis 2026 · Best AI Application (Memory)',
     body: `An AI system that captures the work habits of senior engineers and makes that institutional knowledge available to new hires through a personalized avatar. Built on FastAPI, PostgreSQL with pgvector, Moorcheh AI memory, and ElevenLabs.`,
     image: revenantImg,
     link: 'https://devpost.com/software/revenent',
@@ -60,8 +60,8 @@ const projects: Project[] = [
     n: 'IV',
     title: '49th',
     medium: 'WhatsApp · Claude · Playwright',
-    award: 'Hack Canada 2026 — 3rd Overall · Google "Build with AI"',
-    body: `An end-to-end AI settlement assistant that helps newcomers to Canada navigate forms, taxes, and SIN applications via WhatsApp — multilingual, voice-first, with Playwright agents handling the paperwork.`,
+    award: 'Hack Canada 2026 · 3rd Overall · Google "Build with AI"',
+    body: `An end-to-end AI settlement assistant that helps newcomers to Canada navigate forms, taxes, and SIN applications via WhatsApp: multilingual, voice-first, with Playwright agents handling the paperwork.`,
     image: fortyninthImg,
     link: 'https://devpost.com/software/hack-canada-2026',
     rotate: 1.5,
@@ -79,7 +79,7 @@ const projects: Project[] = [
     n: 'VI',
     title: 'SideQuest',
     medium: 'iOS · SwiftUI · Gemini',
-    body: `A native iOS travel app that generates discovery-focused routes — scenic detours, cultural stops, AI voice guides, and gamified challenges. Built with SwiftUI, Gemini AI, ElevenLabs, Google Maps, Supabase, and Solana for NFT badges.`,
+    body: `A native iOS travel app that generates discovery-focused routes: scenic detours, cultural stops, AI voice guides, and gamified challenges. Built with SwiftUI, Gemini AI, ElevenLabs, Google Maps, Supabase, and Solana for NFT badges.`,
     image: sidequestImg,
     link: 'https://devpost.com/software/sidequest-0iysgt',
     rotate: 1.2,
@@ -98,7 +98,7 @@ const projects: Project[] = [
     n: 'VIII',
     title: 'Employment Run',
     medium: 'FPGA · Verilog',
-    body: `A small hardware game written for an Altera DE1 — collision detection, sprite logic, and a soundtrack of beeps. The kind of project where the joy is in the wires.`,
+    body: `A small hardware game written for an Altera DE1: collision detection, sprite logic, and a soundtrack of beeps. The kind of project where the joy is in the wires.`,
     image: employmentImg,
     link: 'https://www.linkedin.com/posts/seeron-sivashankar_fpga-verilog-hardwareengineering-activity-7401361285122260992-pvg1',
     rotate: 1.2,
@@ -140,7 +140,7 @@ export default function Projects() {
                 style={{ filter: 'sepia(0.12) contrast(1.02)' }}
               />
               <div className="flex justify-between items-center mt-2 px-1 serif italic text-ink-faded text-xs md:text-sm">
-                <span>— project {p.n.toLowerCase()} —</span>
+                <span>project {p.n.toLowerCase()}</span>
                 <span className="underline decoration-dotted underline-offset-4">view ↗</span>
               </div>
             </div>
@@ -153,7 +153,7 @@ export default function Projects() {
                 {p.title}
               </h3>
               <div className="serif italic text-ink-faded smallcaps text-xs md:text-sm mb-3">
-                — {p.medium} —
+                {p.medium}
               </div>
 
               {p.award && (

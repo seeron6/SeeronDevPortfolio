@@ -207,7 +207,7 @@ function SecretTrigger({ onUnlock }: { onUnlock: () => void }) {
       )}
 
       <figcaption className="text-center serif italic text-ink-faded text-xs md:text-sm mt-2 mb-1">
-        — ... —
+        ...
       </figcaption>
     </figure>
   );
@@ -220,7 +220,7 @@ export default function LifeRecap() {
     <DetailView id="gallery" chapter="Chapter V" title="Photo Gallery">
       <div className="max-w-4xl mx-auto mb-10 md:mb-16 text-center">
         <InkText className="serif italic text-ink-soft text-base md:text-lg leading-[1.9]">
-          {`A scrapbook of moments worth keeping — pinned alongside the rest of the story so the people behind it aren't forgotten.`}
+          {`A scrapbook of moments worth keeping, pinned alongside the rest of the story so the people behind it aren't forgotten.`}
         </InkText>
 
         <div className="ink-divider serif italic text-ink-faded mt-8 max-w-md mx-auto text-sm">
@@ -247,7 +247,7 @@ export default function LifeRecap() {
                   style={{ filter: 'sepia(0.18) contrast(1.02)' }}
                 />
                 <figcaption className="text-center serif italic text-ink-faded text-xs md:text-sm mt-2 mb-1">
-                  — {p.caption} —
+                  {p.caption}
                 </figcaption>
               </figure>
             )
@@ -290,7 +290,7 @@ export default function LifeRecap() {
                   style={{ filter: 'sepia(0.18) contrast(1.02)' }}
                 />
                 <figcaption className="text-center serif italic text-ink-faded text-xs md:text-sm mt-2 mb-1">
-                  — {p.caption} —
+                  {p.caption}
                 </figcaption>
               </figure>
             ))}

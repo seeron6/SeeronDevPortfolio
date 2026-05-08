@@ -104,7 +104,7 @@ function Card({ item, index }: { item: Item; index: number }) {
           {item.name}
         </div>
         <div className="serif italic text-ink-faded text-sm leading-snug mt-1">
-          — {item.note}
+          {item.note}
         </div>
       </div>
     </div>
@@ -138,7 +138,7 @@ export default function Favourites() {
     <DetailView id="favourites" chapter="Chapter IV" title="What I’m Loving">
       <div className="max-w-3xl mx-auto mb-12 md:mb-16 text-center">
         <InkText className="serif italic text-ink-soft text-base md:text-lg leading-[1.85]">
-          {`A short ledger of what's been on rotation — the artists I keep returning to, the books on the nightstand, the shows I never finish but always restart.`}
+          {`A short ledger of what's been on rotation: the artists I keep returning to, the books on the nightstand, the shows I never finish but always restart.`}
         </InkText>
       </div>
 

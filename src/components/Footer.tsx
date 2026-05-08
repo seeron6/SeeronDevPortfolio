@@ -15,7 +15,7 @@ export default function Footer() {
           className="serif text-ink-soft text-lg md:text-xl leading-[1.9] mb-10"
           wordDelay={0.05}
         >
-          {`Thank you for reading. If any of this resonated — a project you'd like to talk about, a problem you're trying to solve, or simply a hello — I would love to hear from you.`}
+          {`Thank you for reading. If any of this resonated, whether it's a project you'd like to talk about, a problem you're trying to solve, or simply a hello, I would love to hear from you.`}
         </InkText>
 
         <div className="flex flex-col items-center gap-6 mb-12">

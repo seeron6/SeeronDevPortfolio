@@ -10,7 +10,7 @@ export default function Hero() {
     <header className="hero-block max-w-3xl mx-auto pb-2">
       <div className="flex justify-between items-baseline serif italic text-ink-faded text-xs md:text-sm mb-6 fade-up" style={{ animationDelay: '0.1s' }}>
         <span className="smallcaps">Toronto, Canada</span>
-        <span className="smallcaps">Vol. I — MMXXVI</span>
+        <span className="smallcaps">Vol. I · MMXXVI</span>
       </div>
 
       <h1 className="script text-ink" style={{ fontSize: 'clamp(2.4rem, 6vw, 5rem)', lineHeight: 1.0 }}>
@@ -21,7 +21,7 @@ export default function Hero() {
       </h1>
 
       <div className="ink-divider serif italic text-base mb-6 max-w-md fade-up" style={{ animationDelay: '3.3s' }}>
-        <span>—</span>
+        <span>·</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr] gap-6 md:gap-10 items-start">
@@ -29,12 +29,12 @@ export default function Hero() {
           <p className="serif text-ink-soft text-sm md:text-base leading-[1.7] mb-5">
             A computer engineering student at the University of Toronto, a
             software consultant, and an incurable tinkerer. What follows is
-            not a résumé but a story — of the things I have built, the people
+            not a résumé but a story of the things I have built, the people
             who have shaped me, and the small details I cannot stop noticing.
           </p>
 
           <div className="serif italic text-ink-faded smallcaps text-[10px] md:text-xs mb-2">
-            — to write back —
+            to write back
           </div>
           <div className="flex flex-col gap-1">
             <a
@@ -69,7 +69,7 @@ export default function Hero() {
             className="block w-full h-auto"
             style={{ filter: 'sepia(0.18) contrast(1.02)' }} />
           <div className="text-center serif italic text-ink-faded mt-2 mb-1 text-[11px] md:text-xs">
-            — the author —
+            the author
           </div>
         </div>
       </div>
