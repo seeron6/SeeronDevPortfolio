@@ -147,12 +147,13 @@ html, body {
    rolled-paper end + the floating navigation pill. */
 @media (orientation: portrait) {
   .scroll-content {
-    /* Symmetric bounds well inside the visible parchment area, with extra
-       bottom space for the rolled-paper edge + floating nav pill. */
+    /* Stays inside the parchment (which lives at x:5–88%, y:5–95% of the
+       viewport on a phone). Bottom margin clears the rolled-paper edge,
+       the iOS URL bar, and the floating nav pill. */
     left: 22%;
     right: 22%;
-    top: 14%;
-    bottom: 22%;
+    top: 7%;
+    bottom: 12%;
   }
 }
 .scroll-content::-webkit-scrollbar { width: 6px; }
