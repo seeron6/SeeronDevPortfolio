@@ -82,17 +82,14 @@ html, body {
   z-index: 0;
 }
 
-/* Portrait — rotate the landscape image 90° so it fits a vertical screen.
-   The extra scale(1.25) zooms the image so the parchment occupies a larger
-   share of the viewport (less of the rolled-paper edge and surrounding wood
-   are visible) — at the cost of slightly more cropping at the corners. */
+/* Portrait — rotate the landscape image 90° so it fits a vertical screen. */
 @media (orientation: portrait) {
   .scroll-bg-img {
     top: 50%;
     left: 50%;
     width: 100vh;
     height: 100vw;
-    transform: translate(-50%, -50%) rotate(90deg) scale(1.25);
+    transform: translate(-50%, -50%) rotate(90deg);
     transform-origin: center;
   }
 }
@@ -150,12 +147,15 @@ html, body {
    rolled-paper end + the floating navigation pill. */
 @media (orientation: portrait) {
   .scroll-content {
-    left: 8%;
+    /* These bounds match the visible parchment area on a phone-sized viewport.
+       The parchment in the rotated, cover-fitted image lives roughly at
+       x: 15%–95%, y: 11%–81% of the viewport — content stays inside that
+       window and leaves room for the bottom rolled-paper edge + floating
+       nav pill. */
+    left: 17%;
     right: 8%;
-    top: 6%;
-    /* extra bottom space so the bottom rolled-paper edge and the floating
-       nav pill stay clear of body content */
-    bottom: 14%;
+    top: 14%;
+    bottom: 22%;
   }
 }
 .scroll-content::-webkit-scrollbar { width: 6px; }
