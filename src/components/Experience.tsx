@@ -6,7 +6,7 @@ const entries = [
   {
     company: 'Brainweber Inc.',
     role: 'Software Consultant',
-    period: 'May 2024 to Aug 2024',
+    period: 'Mar 2025 to Present',
     body:
       `Engineered a generative-AI voice-chat feature for a web application, increasing user engagement by roughly 40%. Refined the database architecture on Supabase, optimized Python API endpoints to shave 15% off latency, and authored the technical specification for the team's first scalable AI integration.`,
     tech: ['Generative AI', 'React', 'Supabase', 'Python'],
