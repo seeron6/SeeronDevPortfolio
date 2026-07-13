@@ -1,84 +1,49 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import type { Session } from '@supabase/supabase-js';
 import { Lock, LogOut, Trash2, Pencil, Star, X, Upload, Plus } from 'lucide-react';
-import { supabase, supabaseEnabled } from '../lib/supabase';
-import {
-  getPosts,
-  createPost,
-  updatePost,
-  deletePost,
-  uploadPostImage,
-  type Post,
-} from '../lib/posts';
+import { getAuthStatus, login, logout } from '../lib/auth';
+import { getPosts, createPost, updatePost, deletePost, type Post } from '../lib/posts';
+import { uploadPostImage } from '../lib/uploadImage';
 import { formatDate } from '../lib/format';
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 export default function Admin() {
-  const [session, setSession] = useState<Session | null | undefined>(undefined);
+  const [authed, setAuthed] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
-    if (!supabase) {
-      setSession(null);
-      return;
-    }
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
-    return () => sub.subscription.unsubscribe();
+    getAuthStatus().then(setAuthed);
   }, []);
 
   return (
     <div className="mx-auto max-w-3xl px-6 pt-10 pb-4 md:pt-16">
-      {!supabaseEnabled ? (
-        <NotConfigured />
-      ) : session === undefined ? (
+      {authed === undefined ? (
         <p className="label py-24 text-center">Loading…</p>
-      ) : session ? (
-        <Dashboard email={session.user.email ?? ''} />
+      ) : authed ? (
+        <Dashboard onSignOut={() => setAuthed(false)} />
       ) : (
-        <LoginForm />
+        <LoginForm onSuccess={() => setAuthed(true)} />
       )}
     </div>
   );
 }
 
-function NotConfigured() {
-  return (
-    <div className="py-16">
-      <p className="label mb-5">Admin</p>
-      <h1 className="font-display text-fg" style={{ fontSize: '2.6rem' }}>
-        Supabase isn&apos;t connected yet.
-      </h1>
-      <p className="prose-serif mt-5 text-fg-dim">
-        Add your <code className="text-fg">VITE_SUPABASE_URL</code> and{' '}
-        <code className="text-fg">VITE_SUPABASE_ANON_KEY</code> to a{' '}
-        <code className="text-fg">.env.local</code> file (see{' '}
-        <code className="text-fg">.env.example</code> and{' '}
-        <code className="text-fg">supabase/schema.sql</code>), then rebuild. Until
-        then the journal shows the built-in seed entries.
-      </p>
-      <Link to="/" className="btn mt-8">
-        Back to site
-      </Link>
-    </div>
-  );
-}
-
-function LoginForm() {
-  const [email, setEmail] = useState('');
+function LoginForm({ onSuccess }: { onSuccess: () => void }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!supabase) return;
     setBusy(true);
     setError('');
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setError(error.message);
-    setBusy(false);
+    try {
+      await login(password);
+      onSuccess();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed.');
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -95,21 +60,13 @@ function LoginForm() {
       <form onSubmit={submit} className="flex flex-col gap-4">
         <input
           className="field"
-          type="email"
-          placeholder="Email"
-          autoComplete="username"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          className="field"
           type="password"
           placeholder="Password"
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          autoFocus
         />
         {error && <p className="text-sm text-red-400">{error}</p>}
         <button className="btn btn-solid justify-center" disabled={busy} type="submit">
@@ -117,8 +74,8 @@ function LoginForm() {
         </button>
       </form>
       <p className="mt-6 text-center text-xs text-fg-faint">
-        Protected by Supabase Auth. Create your admin user in the Supabase
-        dashboard.
+        Protected by a server-side password. Set <code className="text-fg-dim">ADMIN_PASSWORD</code>{' '}
+        in your Vercel project.
       </p>
     </div>
   );
@@ -134,7 +91,7 @@ interface Draft {
 
 const emptyDraft = (): Draft => ({ date: todayISO(), title: '', description: '', images: [] });
 
-function Dashboard({ email }: { email: string }) {
+function Dashboard({ onSignOut }: { onSignOut: () => void }) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [draft, setDraft] = useState<Draft>(emptyDraft());
   const [saving, setSaving] = useState(false);
@@ -219,15 +176,20 @@ function Dashboard({ email }: { email: string }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  async function signOut() {
+    await logout();
+    onSignOut();
+  }
+
   return (
     <div className="py-8">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-line pb-6">
         <div>
           <p className="label mb-1">Journal admin</p>
-          <p className="text-sm text-fg-faint">{email}</p>
+          <p className="text-sm text-fg-faint">Signed in</p>
         </div>
-        <button className="btn" onClick={() => supabase?.auth.signOut()}>
+        <button className="btn" onClick={signOut}>
           <LogOut size={15} /> Sign out
         </button>
       </div>
@@ -360,10 +322,7 @@ function Dashboard({ email }: { email: string }) {
         </h2>
         <div className="mt-6 flex flex-col">
           {posts.map((post) => (
-            <div
-              key={post.id}
-              className="flex items-center gap-4 border-b border-line py-4"
-            >
+            <div key={post.id} className="flex items-center gap-4 border-b border-line py-4">
               <div className="h-14 w-20 shrink-0 overflow-hidden border border-line-soft bg-surface">
                 {post.images?.[0] ? (
                   <img src={post.images[0]} alt="" className="h-full w-full object-cover" />
@@ -389,9 +348,7 @@ function Dashboard({ email }: { email: string }) {
               </button>
             </div>
           ))}
-          {posts.length === 0 && (
-            <p className="py-6 text-sm text-fg-faint">No entries yet.</p>
-          )}
+          {posts.length === 0 && <p className="py-6 text-sm text-fg-faint">No entries yet.</p>}
         </div>
       </div>
     </div>

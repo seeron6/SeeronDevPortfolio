@@ -25,21 +25,21 @@ function Header() {
 
   return (
     <header
-      className="sticky top-0 z-40 transition-all duration-500"
+      className="sticky top-0 z-40 transition-colors duration-300"
       style={{
-        background: scrolled ? 'rgba(10,10,11,0.72)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(14px)' : 'none',
-        borderBottom: scrolled ? '1px solid var(--color-line-soft)' : '1px solid transparent',
+        background: scrolled ? 'rgba(10,10,11,0.82)' : 'rgba(10,10,11,0)',
+        backdropFilter: scrolled ? 'blur(14px)' : 'blur(0px)',
+        WebkitBackdropFilter: scrolled ? 'blur(14px)' : 'blur(0px)',
+        borderBottom: `1px solid ${scrolled ? 'var(--color-line-soft)' : 'transparent'}`,
       }}
     >
-      <div
-        className="mx-auto flex flex-col items-center gap-3 transition-all duration-500"
-        style={{ padding: scrolled ? '14px 20px' : '30px 20px 20px' }}
-      >
+      {/* Fixed vertical padding — the header never changes height, so its size
+          can't feed back into the scroll position (that caused the flicker). */}
+      <div className="mx-auto flex flex-col items-center gap-3 px-5 py-5">
         <Link
           to="/"
-          className="script leading-none text-fg transition-transform duration-500 hover:scale-[1.03]"
-          style={{ fontSize: scrolled ? '1.9rem' : '2.5rem' }}
+          className="script leading-none text-fg transition-transform duration-300 hover:scale-[1.03]"
+          style={{ fontSize: '2.2rem' }}
           aria-label="Home"
         >
           Seeron
