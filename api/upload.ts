@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { put } from '@vercel/blob';
-import { isAuthed } from './_lib/auth';
+import { isAuthed } from './_lib/auth.js';
 
 /**
  * Receives an image (base64) that the browser has already resized/compressed,

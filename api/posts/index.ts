@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { isAuthed } from '../_lib/auth';
-import { listPosts, insertPost } from '../_lib/db';
+import { isAuthed } from '../_lib/auth.js';
+import { listPosts, insertPost } from '../_lib/db.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {

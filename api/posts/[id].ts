@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { isAuthed } from '../_lib/auth';
-import { updatePostRow, deletePostRow } from '../_lib/db';
+import { isAuthed } from '../_lib/auth.js';
+import { updatePostRow, deletePostRow } from '../_lib/db.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const id = String(req.query.id || '');
