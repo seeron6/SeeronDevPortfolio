@@ -98,3 +98,65 @@ export async function deletePostRow(id: string): Promise<void> {
   const sql = getSql();
   await sql`delete from posts where id = ${id}`;
 }
+
+/* ─────────────────────────── Gallery ─────────────────────────── */
+
+export interface GalleryRow {
+  id: string;
+  title: string;
+  image_url: string;
+  created_at: string;
+}
+
+export interface GalleryItem {
+  id: string;
+  title: string;
+  image: string;
+  created_at: string;
+}
+
+function toGallery(r: GalleryRow): GalleryItem {
+  return { id: r.id, title: r.title, image: r.image_url, created_at: r.created_at };
+}
+
+export async function listGallery(): Promise<GalleryItem[]> {
+  const sql = getSql();
+  const rows = (await sql`
+    select id, title, image_url, created_at
+    from gallery
+    order by created_at desc
+  `) as GalleryRow[];
+  return rows.map(toGallery);
+}
+
+export async function insertGalleryItem(input: {
+  title: string;
+  image: string;
+}): Promise<GalleryItem> {
+  const sql = getSql();
+  const rows = (await sql`
+    insert into gallery (title, image_url)
+    values (${input.title}, ${input.image})
+    returning id, title, image_url, created_at
+  `) as GalleryRow[];
+  return toGallery(rows[0]);
+}
+
+export async function updateGalleryRow(
+  id: string,
+  input: { title: string; image: string }
+): Promise<GalleryItem | null> {
+  const sql = getSql();
+  const rows = (await sql`
+    update gallery
+    set title = ${input.title}, image_url = ${input.image}
+    where id = ${id}
+    returning id, title, image_url, created_at
+  `) as GalleryRow[];
+  return rows[0] ? toGallery(rows[0]) : null;
+}
+
+export async function deleteGalleryRow(id: string): Promise<void> {
+  const sql = getSql();
+  await sql`delete from gallery where id = ${id}`;
+}

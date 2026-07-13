@@ -5,6 +5,7 @@ import { Github, Linkedin, Mail } from 'lucide-react';
 const NAV = [
   { to: '/', label: 'Journal', end: true },
   { to: '/projects', label: 'Projects', end: false },
+  { to: '/gallery', label: 'Gallery', end: false },
   { to: '/experience', label: 'Experience', end: false },
   { to: '/about', label: 'About', end: false },
   { to: '/contact', label: 'Contact', end: false },

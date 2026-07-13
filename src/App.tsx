@@ -4,6 +4,7 @@ import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import JournalPost from './pages/JournalPost';
 import Projects from './pages/Projects';
+import Gallery from './pages/Gallery';
 import Experience from './pages/Experience';
 import About from './pages/About';
 import Contact from './pages/Contact';
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/journal/:id" element={<JournalPost />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/gallery" element={<Gallery />} />
           <Route path="/experience" element={<Experience />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />

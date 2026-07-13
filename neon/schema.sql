@@ -16,3 +16,13 @@ create table if not exists posts (
 
 -- Fast "newest first" ordering for the journal feed.
 create index if not exists posts_event_date_idx on posts (event_date desc, created_at desc);
+
+-- Gallery: standalone photos with an optional title.
+create table if not exists gallery (
+  id         uuid        primary key default gen_random_uuid(),
+  created_at timestamptz not null    default now(),
+  title      text        not null    default '',
+  image_url  text        not null
+);
+
+create index if not exists gallery_created_idx on gallery (created_at desc);
