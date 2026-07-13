@@ -1,0 +1,399 @@
+import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import type { Session } from '@supabase/supabase-js';
+import { Lock, LogOut, Trash2, Pencil, Star, X, Upload, Plus } from 'lucide-react';
+import { supabase, supabaseEnabled } from '../lib/supabase';
+import {
+  getPosts,
+  createPost,
+  updatePost,
+  deletePost,
+  uploadPostImage,
+  type Post,
+} from '../lib/posts';
+import { formatDate } from '../lib/format';
+
+const todayISO = () => new Date().toISOString().slice(0, 10);
+
+export default function Admin() {
+  const [session, setSession] = useState<Session | null | undefined>(undefined);
+
+  useEffect(() => {
+    if (!supabase) {
+      setSession(null);
+      return;
+    }
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  return (
+    <div className="mx-auto max-w-3xl px-6 pt-10 pb-4 md:pt-16">
+      {!supabaseEnabled ? (
+        <NotConfigured />
+      ) : session === undefined ? (
+        <p className="label py-24 text-center">Loading…</p>
+      ) : session ? (
+        <Dashboard email={session.user.email ?? ''} />
+      ) : (
+        <LoginForm />
+      )}
+    </div>
+  );
+}
+
+function NotConfigured() {
+  return (
+    <div className="py-16">
+      <p className="label mb-5">Admin</p>
+      <h1 className="font-display text-fg" style={{ fontSize: '2.6rem' }}>
+        Supabase isn&apos;t connected yet.
+      </h1>
+      <p className="prose-serif mt-5 text-fg-dim">
+        Add your <code className="text-fg">VITE_SUPABASE_URL</code> and{' '}
+        <code className="text-fg">VITE_SUPABASE_ANON_KEY</code> to a{' '}
+        <code className="text-fg">.env.local</code> file (see{' '}
+        <code className="text-fg">.env.example</code> and{' '}
+        <code className="text-fg">supabase/schema.sql</code>), then rebuild. Until
+        then the journal shows the built-in seed entries.
+      </p>
+      <Link to="/" className="btn mt-8">
+        Back to site
+      </Link>
+    </div>
+  );
+}
+
+function LoginForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!supabase) return;
+    setBusy(true);
+    setError('');
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) setError(error.message);
+    setBusy(false);
+  }
+
+  return (
+    <div className="mx-auto max-w-sm py-20">
+      <div className="mb-8 flex flex-col items-center text-center">
+        <span className="mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-line text-fg-dim">
+          <Lock size={18} />
+        </span>
+        <p className="label mb-2">Admin</p>
+        <h1 className="font-display text-fg" style={{ fontSize: '2rem' }}>
+          Sign in
+        </h1>
+      </div>
+      <form onSubmit={submit} className="flex flex-col gap-4">
+        <input
+          className="field"
+          type="email"
+          placeholder="Email"
+          autoComplete="username"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          className="field"
+          type="password"
+          placeholder="Password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        {error && <p className="text-sm text-red-400">{error}</p>}
+        <button className="btn btn-solid justify-center" disabled={busy} type="submit">
+          {busy ? 'Signing in…' : 'Sign in'}
+        </button>
+      </form>
+      <p className="mt-6 text-center text-xs text-fg-faint">
+        Protected by Supabase Auth. Create your admin user in the Supabase
+        dashboard.
+      </p>
+    </div>
+  );
+}
+
+interface Draft {
+  id?: string;
+  date: string;
+  title: string;
+  description: string;
+  images: string[];
+}
+
+const emptyDraft = (): Draft => ({ date: todayISO(), title: '', description: '', images: [] });
+
+function Dashboard({ email }: { email: string }) {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [draft, setDraft] = useState<Draft>(emptyDraft());
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
+  const fileRef = useRef<HTMLInputElement | null>(null);
+
+  const refresh = () => getPosts().then(setPosts).catch(() => {});
+  useEffect(() => {
+    refresh();
+  }, []);
+
+  const editing = Boolean(draft.id);
+
+  async function onFiles(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    setError('');
+    try {
+      const urls: string[] = [];
+      for (const file of Array.from(files)) {
+        urls.push(await uploadPostImage(file));
+      }
+      setDraft((d) => ({ ...d, images: [...d.images, ...urls] }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Upload failed.');
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
+
+  function removeImage(url: string) {
+    setDraft((d) => ({ ...d, images: d.images.filter((u) => u !== url) }));
+  }
+
+  function makeCover(url: string) {
+    setDraft((d) => ({ ...d, images: [url, ...d.images.filter((u) => u !== url)] }));
+  }
+
+  async function save(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError('');
+    try {
+      const input = {
+        date: draft.date,
+        title: draft.title.trim(),
+        description: draft.description.trim(),
+        images: draft.images,
+      };
+      if (draft.id) await updatePost(draft.id, input);
+      else await createPost(input);
+      setDraft(emptyDraft());
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Save failed.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function remove(id: string) {
+    if (!window.confirm('Delete this entry? This cannot be undone.')) return;
+    try {
+      await deletePost(id);
+      if (draft.id === id) setDraft(emptyDraft());
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Delete failed.');
+    }
+  }
+
+  function edit(post: Post) {
+    setDraft({
+      id: post.id,
+      date: post.date,
+      title: post.title,
+      description: post.description,
+      images: post.images ?? [],
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  return (
+    <div className="py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-line pb-6">
+        <div>
+          <p className="label mb-1">Journal admin</p>
+          <p className="text-sm text-fg-faint">{email}</p>
+        </div>
+        <button className="btn" onClick={() => supabase?.auth.signOut()}>
+          <LogOut size={15} /> Sign out
+        </button>
+      </div>
+
+      {/* Editor */}
+      <form onSubmit={save} className="mt-10">
+        <h2 className="font-display text-fg" style={{ fontSize: '1.8rem' }}>
+          {editing ? 'Edit entry' : 'New entry'}
+        </h2>
+
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-[180px_1fr]">
+          <label className="flex flex-col gap-2">
+            <span className="label">Date</span>
+            <input
+              className="field"
+              type="date"
+              value={draft.date}
+              onChange={(e) => setDraft({ ...draft, date: e.target.value })}
+              required
+            />
+          </label>
+          <label className="flex flex-col gap-2">
+            <span className="label">Title</span>
+            <input
+              className="field"
+              type="text"
+              placeholder="What happened?"
+              value={draft.title}
+              onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+              required
+            />
+          </label>
+        </div>
+
+        <label className="mt-4 flex flex-col gap-2">
+          <span className="label">Description</span>
+          <textarea
+            className="field"
+            placeholder="Tell the story…"
+            value={draft.description}
+            onChange={(e) => setDraft({ ...draft, description: e.target.value })}
+            rows={5}
+          />
+        </label>
+
+        {/* Images */}
+        <div className="mt-5">
+          <span className="label">Images</span>
+          <div className="mt-3 flex flex-wrap gap-3">
+            {draft.images.map((url, i) => (
+              <div key={url} className="group relative h-24 w-32 overflow-hidden border border-line">
+                <img src={url} alt="" className="h-full w-full object-cover" />
+                {i === 0 && (
+                  <span
+                    className="absolute left-1 top-1 rounded px-1.5 py-0.5 text-[10px] font-medium"
+                    style={{ background: 'rgba(0,0,0,0.7)', color: 'var(--color-accent)' }}
+                  >
+                    COVER
+                  </span>
+                )}
+                <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
+                  {i !== 0 && (
+                    <button
+                      type="button"
+                      title="Make cover"
+                      onClick={() => makeCover(url)}
+                      className="text-white/80 hover:text-white"
+                    >
+                      <Star size={16} />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    title="Remove"
+                    onClick={() => removeImage(url)}
+                    className="text-white/80 hover:text-white"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="flex h-24 w-32 flex-col items-center justify-center gap-1 border border-dashed border-line text-fg-faint transition-colors hover:border-fg-faint hover:text-fg-dim"
+            >
+              {uploading ? (
+                <span className="text-xs">Uploading…</span>
+              ) : (
+                <>
+                  <Upload size={18} />
+                  <span className="text-xs">Add</span>
+                </>
+              )}
+            </button>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e) => onFiles(e.target.files)}
+            />
+          </div>
+          <p className="mt-2 text-xs text-fg-faint">
+            First image is the cover. Hover a thumbnail to set cover or remove.
+          </p>
+        </div>
+
+        {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+
+        <div className="mt-6 flex gap-3">
+          <button className="btn btn-solid" disabled={saving || uploading} type="submit">
+            <Plus size={15} /> {saving ? 'Saving…' : editing ? 'Update entry' : 'Publish entry'}
+          </button>
+          {editing && (
+            <button type="button" className="btn" onClick={() => setDraft(emptyDraft())}>
+              Cancel
+            </button>
+          )}
+        </div>
+      </form>
+
+      {/* Existing entries */}
+      <div className="mt-16">
+        <h2 className="font-display text-fg" style={{ fontSize: '1.8rem' }}>
+          Entries <span className="text-fg-faint">({posts.length})</span>
+        </h2>
+        <div className="mt-6 flex flex-col">
+          {posts.map((post) => (
+            <div
+              key={post.id}
+              className="flex items-center gap-4 border-b border-line py-4"
+            >
+              <div className="h-14 w-20 shrink-0 overflow-hidden border border-line-soft bg-surface">
+                {post.images?.[0] ? (
+                  <img src={post.images[0]} alt="" className="h-full w-full object-cover" />
+                ) : null}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-fg">{post.title}</p>
+                <p className="text-xs text-fg-faint">{formatDate(post.date)}</p>
+              </div>
+              <button
+                className="p-2 text-fg-faint transition-colors hover:text-fg"
+                title="Edit"
+                onClick={() => edit(post)}
+              >
+                <Pencil size={16} />
+              </button>
+              <button
+                className="p-2 text-fg-faint transition-colors hover:text-red-400"
+                title="Delete"
+                onClick={() => remove(post.id)}
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          ))}
+          {posts.length === 0 && (
+            <p className="py-6 text-sm text-fg-faint">No entries yet.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
