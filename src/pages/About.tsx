@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FileText, ArrowUpRight } from 'lucide-react';
 import Reveal from '../components/Reveal';
-import portrait from '../assets/formalflick.jpg';
+import portrait from '../assets/seeron-portrait.jpg';
 
 const SKILLS: { group: string; items: string }[] = [
   { group: 'Languages', items: 'Python · TypeScript · JavaScript · SQL · Swift · Java · C · C++ · Verilog' },
