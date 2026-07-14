@@ -40,23 +40,37 @@ export default function Gallery() {
       </Reveal>
 
       {items === null ? (
-        <GridSkeleton />
+        <MasonrySkeleton />
       ) : items.length === 0 ? (
         <p className="prose-serif py-20 text-center text-fg-faint">
           No photos yet — check back soon.
         </p>
       ) : (
-        <div className="mt-14 grid grid-cols-2 gap-3 md:grid-cols-3">
+        // Masonry: photos flow at their natural aspect ratio (portrait + landscape).
+        <div className="mt-14 columns-1 gap-3 sm:columns-2 lg:columns-3">
           {items.map((item, i) => (
-            <Reveal key={item.id} delay={(i % 3) * 80}>
-              <button className="card group w-full text-left" onClick={() => setActive(item)}>
-                <div className="card-media" style={{ aspectRatio: '4 / 5' }}>
-                  <img src={item.image} alt={item.title || 'Gallery photo'} loading="lazy" />
-                </div>
+            <Reveal key={item.id} as="div" delay={(i % 3) * 70} className="mb-3 break-inside-avoid">
+              <button
+                onClick={() => setActive(item)}
+                className="group relative block w-full overflow-hidden border border-line-soft bg-surface"
+              >
+                <img
+                  src={item.image}
+                  alt={item.title || 'Gallery photo'}
+                  loading="lazy"
+                  className="block h-auto w-full align-top transition-transform duration-700 group-hover:scale-[1.04]"
+                  style={{ filter: 'saturate(0.95) brightness(0.96)' }}
+                />
                 {item.title && (
-                  <div className="card-caption">
-                    <h3 className="card-title">{item.title}</h3>
-                  </div>
+                  <>
+                    <div
+                      className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2"
+                      style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)' }}
+                    />
+                    <div className="card-caption pointer-events-none">
+                      <h3 className="card-title">{item.title}</h3>
+                    </div>
+                  </>
                 )}
               </button>
             </Reveal>
@@ -91,14 +105,15 @@ export default function Gallery() {
   );
 }
 
-function GridSkeleton() {
+function MasonrySkeleton() {
+  const heights = [220, 300, 260, 340, 240, 300];
   return (
-    <div className="mt-14 grid grid-cols-2 gap-3 md:grid-cols-3">
-      {Array.from({ length: 6 }).map((_, i) => (
+    <div className="mt-14 columns-1 gap-3 sm:columns-2 lg:columns-3">
+      {heights.map((h, i) => (
         <div
           key={i}
-          className="animate-pulse border border-line-soft bg-surface"
-          style={{ aspectRatio: '4 / 5' }}
+          className="mb-3 animate-pulse border border-line-soft bg-surface"
+          style={{ height: h }}
         />
       ))}
     </div>

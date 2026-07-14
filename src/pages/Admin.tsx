@@ -512,7 +512,11 @@ function GalleryManager() {
       {cropFile && (
         <ImageCropper
           file={cropFile}
-          aspect={4 / 5}
+          aspectOptions={[
+            { label: 'Portrait', value: 4 / 5 },
+            { label: 'Landscape', value: 3 / 2 },
+            { label: 'Square', value: 1 },
+          ]}
           onCancel={() => setCropFile(null)}
           onConfirm={onCropConfirm}
         />

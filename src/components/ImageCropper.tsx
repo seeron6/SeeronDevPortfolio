@@ -1,9 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Cropper, { type Area } from 'react-easy-crop';
 import { Check, X, ZoomIn } from 'lucide-react';
 
 const MAX_OUTPUT = 1800;
 const JPEG_QUALITY = 0.85;
+
+export interface AspectOption {
+  label: string;
+  value: number;
+}
 
 async function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -32,22 +37,53 @@ async function getCroppedDataUrl(imageSrc: string, area: Area): Promise<string> 
 
 interface Props {
   file: File;
-  /** Target aspect ratio (width / height), e.g. 3/2 or 4/5. */
-  aspect: number;
+  /** Fixed aspect ratio (width / height), e.g. 3/2. Used when aspectOptions is absent. */
+  aspect?: number;
+  /** When provided, the user can switch orientation; it also auto-picks the one
+   *  closest to the photo's own orientation. */
+  aspectOptions?: AspectOption[];
   onCancel: () => void;
   onConfirm: (dataUrl: string) => void;
 }
 
-export default function ImageCropper({ file, aspect, onCancel, onConfirm }: Props) {
+export default function ImageCropper({ file, aspect, aspectOptions, onCancel, onConfirm }: Props) {
   const [imageSrc] = useState(() => URL.createObjectURL(file));
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [area, setArea] = useState<Area | null>(null);
   const [busy, setBusy] = useState(false);
+  const [activeAspect, setActiveAspect] = useState<number>(
+    aspectOptions ? aspectOptions[0].value : aspect ?? 3 / 2
+  );
+  const userPicked = useRef(false);
 
   useEffect(() => () => URL.revokeObjectURL(imageSrc), [imageSrc]);
 
-  const onCropComplete = useCallback((_area: Area, pixels: Area) => setArea(pixels), []);
+  const onCropComplete = useCallback((_a: Area, pixels: Area) => setArea(pixels), []);
+
+  // Default to the option closest to the photo's own orientation.
+  const onMediaLoaded = useCallback(
+    (media: { naturalWidth: number; naturalHeight: number }) => {
+      if (!aspectOptions || userPicked.current) return;
+      const srcRatio = media.naturalWidth / media.naturalHeight;
+      let best = aspectOptions[0];
+      let bestDiff = Infinity;
+      for (const opt of aspectOptions) {
+        const diff = Math.abs(opt.value - srcRatio);
+        if (diff < bestDiff) {
+          bestDiff = diff;
+          best = opt;
+        }
+      }
+      setActiveAspect(best.value);
+    },
+    [aspectOptions]
+  );
+
+  function pickAspect(v: number) {
+    userPicked.current = true;
+    setActiveAspect(v);
+  }
 
   async function confirm() {
     if (!area) return;
@@ -82,7 +118,7 @@ export default function ImageCropper({ file, aspect, onCancel, onConfirm }: Prop
           image={imageSrc}
           crop={crop}
           zoom={zoom}
-          aspect={aspect}
+          aspect={activeAspect}
           minZoom={1}
           maxZoom={4}
           restrictPosition
@@ -90,10 +126,27 @@ export default function ImageCropper({ file, aspect, onCancel, onConfirm }: Prop
           onCropChange={setCrop}
           onZoomChange={setZoom}
           onCropComplete={onCropComplete}
+          onMediaLoaded={onMediaLoaded}
         />
       </div>
 
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-6 py-5">
+        {aspectOptions && (
+          <div className="flex items-center justify-center gap-6">
+            {aspectOptions.map((opt) => (
+              <button
+                key={opt.label}
+                type="button"
+                className="nav-link"
+                data-active={Math.abs(activeAspect - opt.value) < 0.001}
+                onClick={() => pickAspect(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="flex items-center gap-3">
           <ZoomIn size={16} className="text-fg-faint" />
           <input
