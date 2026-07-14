@@ -15,9 +15,8 @@ export const experience: Role[] = [
     period: 'Mar 2025 — Present',
     location: 'Remote',
     points: [
-      'One of the core developers of SciMynd Studio and SciMynd Dashboards.',
       'Designed evaluation pipelines for AI-generated outputs, reducing output rejection rates by defining structured annotation schemas adopted across distributed review teams.',
-      'Built structured data generation pipelines that transformed unstructured AI outputs into schema-conformant records for reliable downstream consumption.',
+      'Core developer of SciMynd Studio and Dashboards, pushing 30+ features and actively contributing to Studio development.',
       'Represented the company as an exhibitor at the AI4 Conference in Las Vegas, engaging 12,000+ attendees, researchers, and enterprise stakeholders.',
     ],
   },

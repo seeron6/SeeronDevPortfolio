@@ -35,8 +35,9 @@ export default function About() {
               somewhere between AI systems, hardware, and shipping products fast.
             </p>
             <p>
-              I currently work as a Forward Development Engineer at SciMynd, where I
-              design evaluation pipelines and structured data systems for AI outputs.
+              I currently work as a Founding Software Engineer at SciMynd, where
+              I&apos;m a core developer of SciMynd Studio and Dashboards and build
+              evaluation pipelines for AI outputs.
               On weekends I build at hackathons — and lately I&apos;ve been lucky
               enough to keep winning them. Next up: the Y Combinator Startup School
               Founder Program in San Francisco.
