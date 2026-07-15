@@ -35,7 +35,7 @@ export default function Gallery() {
           Gallery.
         </h1>
         <p className="prose-serif mt-6 max-w-2xl text-fg-dim">
-          A collection of moments — people, places, and the occasional good fit.
+          A collection of moments, people, places, and the occasional good fit.
         </p>
       </Reveal>
 
@@ -43,7 +43,7 @@ export default function Gallery() {
         <MasonrySkeleton />
       ) : items.length === 0 ? (
         <p className="prose-serif py-20 text-center text-fg-faint">
-          No photos yet — check back soon.
+          No photos yet, check back soon.
         </p>
       ) : (
         // Masonry: photos flow at their natural aspect ratio (portrait + landscape).

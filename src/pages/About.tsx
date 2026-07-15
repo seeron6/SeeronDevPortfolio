@@ -31,14 +31,14 @@ export default function About() {
           <div className="prose-serif mt-6">
             <p>
               I&apos;m a Computer Engineering student at the University of Toronto
-              (BASc + PEY Co-op, 2024–2028) and a builder at heart — most at home
+              (BASc + PEY Co-op, 2024–2028) and a builder at heart, most at home
               somewhere between AI systems, hardware, and shipping products fast.
             </p>
             <p>
               I currently work as a Founding Software Engineer at SciMynd, where
               I&apos;m a core developer of SciMynd Studio and Dashboards and build
               evaluation pipelines for AI outputs.
-              On weekends I build at hackathons — and lately I&apos;ve been lucky
+              On weekends I build at hackathons, and lately I&apos;ve been lucky
               enough to keep winning them. Next up: the Y Combinator Startup School
               Founder Program in San Francisco.
             </p>

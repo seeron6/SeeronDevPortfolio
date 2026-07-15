@@ -78,7 +78,7 @@ export default function JournalPost() {
         <div className="mt-10 flex flex-col gap-4">
           {rest.map((src, i) => (
             <Reveal key={i} delay={40}>
-              <img src={src} alt={`${post.title} — ${i + 2}`} className="w-full border border-line-soft" />
+              <img src={src} alt={`${post.title}, ${i + 2}`} className="w-full border border-line-soft" />
             </Reveal>
           ))}
         </div>

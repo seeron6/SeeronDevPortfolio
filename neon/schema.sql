@@ -26,3 +26,35 @@ create table if not exists gallery (
 );
 
 create index if not exists gallery_created_idx on gallery (created_at desc);
+
+-- Projects: editable in the admin.
+create table if not exists projects (
+  id           uuid        primary key default gen_random_uuid(),
+  created_at   timestamptz not null    default now(),
+  sort_order   integer     not null    default 0,
+  title        text        not null,
+  award        text        not null    default '',
+  display_date text        not null    default '',
+  tags         text[]      not null    default '{}',
+  image_url    text        not null    default '',
+  summary      text        not null    default '',
+  highlights   text[]      not null    default '{}',
+  link         text
+);
+
+create index if not exists projects_order_idx on projects (sort_order asc, created_at desc);
+
+-- Experience roles: editable in the admin.
+create table if not exists experience (
+  id         uuid        primary key default gen_random_uuid(),
+  created_at timestamptz not null    default now(),
+  sort_order integer     not null    default 0,
+  company    text        not null,
+  team       text        not null    default '',
+  title      text        not null,
+  period     text        not null    default '',
+  location   text        not null    default '',
+  points     text[]      not null    default '{}'
+);
+
+create index if not exists experience_order_idx on experience (sort_order asc, created_at desc);

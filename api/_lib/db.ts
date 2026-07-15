@@ -160,3 +160,178 @@ export async function deleteGalleryRow(id: string): Promise<void> {
   const sql = getSql();
   await sql`delete from gallery where id = ${id}`;
 }
+
+/* ─────────────────────────── Projects ─────────────────────────── */
+
+export interface ProjectRow {
+  id: string;
+  sort_order: number;
+  title: string;
+  award: string;
+  display_date: string;
+  tags: string[] | null;
+  image_url: string;
+  summary: string;
+  highlights: string[] | null;
+  link: string | null;
+  created_at: string;
+}
+
+export interface ProjectItem {
+  id: string;
+  sort_order: number;
+  title: string;
+  award: string;
+  date: string;
+  tags: string[];
+  image: string;
+  summary: string;
+  highlights: string[];
+  link: string;
+}
+
+export interface ProjectInput {
+  sort_order: number;
+  title: string;
+  award: string;
+  date: string;
+  tags: string[];
+  image: string;
+  summary: string;
+  highlights: string[];
+  link: string;
+}
+
+function toProject(r: ProjectRow): ProjectItem {
+  return {
+    id: r.id,
+    sort_order: r.sort_order,
+    title: r.title,
+    award: r.award,
+    date: r.display_date,
+    tags: r.tags ?? [],
+    image: r.image_url,
+    summary: r.summary,
+    highlights: r.highlights ?? [],
+    link: r.link ?? '',
+  };
+}
+
+export async function listProjects(): Promise<ProjectItem[]> {
+  const sql = getSql();
+  const rows = (await sql`
+    select id, sort_order, title, award, display_date, tags, image_url, summary, highlights, link, created_at
+    from projects order by sort_order asc, created_at desc
+  `) as ProjectRow[];
+  return rows.map(toProject);
+}
+
+export async function insertProject(i: ProjectInput): Promise<ProjectItem> {
+  const sql = getSql();
+  const rows = (await sql`
+    insert into projects (sort_order, title, award, display_date, tags, image_url, summary, highlights, link)
+    values (${i.sort_order}, ${i.title}, ${i.award}, ${i.date}, ${i.tags}::text[], ${i.image}, ${i.summary}, ${i.highlights}::text[], ${i.link})
+    returning id, sort_order, title, award, display_date, tags, image_url, summary, highlights, link, created_at
+  `) as ProjectRow[];
+  return toProject(rows[0]);
+}
+
+export async function updateProjectRow(id: string, i: ProjectInput): Promise<ProjectItem | null> {
+  const sql = getSql();
+  const rows = (await sql`
+    update projects set sort_order = ${i.sort_order}, title = ${i.title}, award = ${i.award},
+      display_date = ${i.date}, tags = ${i.tags}::text[], image_url = ${i.image},
+      summary = ${i.summary}, highlights = ${i.highlights}::text[], link = ${i.link}
+    where id = ${id}
+    returning id, sort_order, title, award, display_date, tags, image_url, summary, highlights, link, created_at
+  `) as ProjectRow[];
+  return rows[0] ? toProject(rows[0]) : null;
+}
+
+export async function deleteProjectRow(id: string): Promise<void> {
+  const sql = getSql();
+  await sql`delete from projects where id = ${id}`;
+}
+
+/* ─────────────────────────── Experience ─────────────────────────── */
+
+export interface ExperienceRow {
+  id: string;
+  sort_order: number;
+  company: string;
+  team: string;
+  title: string;
+  period: string;
+  location: string;
+  points: string[] | null;
+  created_at: string;
+}
+
+export interface ExperienceItem {
+  id: string;
+  sort_order: number;
+  company: string;
+  team: string;
+  title: string;
+  period: string;
+  location: string;
+  points: string[];
+}
+
+export interface ExperienceInput {
+  sort_order: number;
+  company: string;
+  team: string;
+  title: string;
+  period: string;
+  location: string;
+  points: string[];
+}
+
+function toExperience(r: ExperienceRow): ExperienceItem {
+  return {
+    id: r.id,
+    sort_order: r.sort_order,
+    company: r.company,
+    team: r.team,
+    title: r.title,
+    period: r.period,
+    location: r.location,
+    points: r.points ?? [],
+  };
+}
+
+export async function listExperience(): Promise<ExperienceItem[]> {
+  const sql = getSql();
+  const rows = (await sql`
+    select id, sort_order, company, team, title, period, location, points, created_at
+    from experience order by sort_order asc, created_at desc
+  `) as ExperienceRow[];
+  return rows.map(toExperience);
+}
+
+export async function insertExperience(i: ExperienceInput): Promise<ExperienceItem> {
+  const sql = getSql();
+  const rows = (await sql`
+    insert into experience (sort_order, company, team, title, period, location, points)
+    values (${i.sort_order}, ${i.company}, ${i.team}, ${i.title}, ${i.period}, ${i.location}, ${i.points}::text[])
+    returning id, sort_order, company, team, title, period, location, points, created_at
+  `) as ExperienceRow[];
+  return toExperience(rows[0]);
+}
+
+export async function updateExperienceRow(id: string, i: ExperienceInput): Promise<ExperienceItem | null> {
+  const sql = getSql();
+  const rows = (await sql`
+    update experience set sort_order = ${i.sort_order}, company = ${i.company}, team = ${i.team},
+      title = ${i.title}, period = ${i.period}, location = ${i.location}, points = ${i.points}::text[]
+    where id = ${id}
+    returning id, sort_order, company, team, title, period, location, points, created_at
+  `) as ExperienceRow[];
+  return rows[0] ? toExperience(rows[0]) : null;
+}
+
+export async function deleteExperienceRow(id: string): Promise<void> {
+  const sql = getSql();
+  await sql`delete from experience where id = ${id}`;
+}

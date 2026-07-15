@@ -27,7 +27,7 @@ export default function Home() {
             <br className="hidden sm:block" /> and shipping.
           </h1>
           <p className="prose-serif mt-6 max-w-2xl text-fg-dim">
-            A running log of the work — hackathons, launches, milestones, and the
+            A running log of the work, hackathons, launches, milestones, and the
             small moments in between. Newest first.
           </p>
         </Reveal>
@@ -39,7 +39,7 @@ export default function Home() {
           <GridSkeleton />
         ) : posts.length === 0 ? (
           <p className="prose-serif py-20 text-center text-fg-faint">
-            Nothing here yet — the first entry is on its way.
+            Nothing here yet, the first entry is on its way.
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">

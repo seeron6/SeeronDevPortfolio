@@ -17,7 +17,7 @@ export default function Contact() {
           Let&apos;s build something.
         </h1>
         <p className="prose-serif mt-6 max-w-xl text-fg-dim">
-          Always up for a good conversation — new projects, hackathon teams, or
+          Always up for a good conversation, new projects, hackathon teams, or
           just to trade notes. The fastest way to reach me is email.
         </p>
       </Reveal>
